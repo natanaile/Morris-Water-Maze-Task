@@ -129,8 +129,12 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 
 		// set player position
 		player.gameObject.transform.parent = this.gameObject.transform;
+		float playerHeightOffset = player.transform.localPosition.y;
 		player.gameObject.transform.localPosition = GetPositionInArena(playerStartDirection, (radius - playerStartInset));
 		player.gameObject.transform.LookAt(this.transform); // look towards centre of arena
+		player.gameObject.transform.localPosition = new Vector3(player.transform.localPosition.x, playerHeightOffset, player.transform.localPosition.z);
+
+		//player.transform.localRotation = Quaternion.Euler(0, player.transform.localRotation.y, player.transform.localRotation.z);
 
 		StartCoroutine(WaitForPlayer("Morris Water Task", "Press the spacebar to begin Trial " + temp.trialNumber +".", BeginEnvironment));
 	}

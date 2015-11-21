@@ -1,19 +1,36 @@
 fileFormatVersion: 2
-guid: fb26ab41967f9af49bd6c1082e98c5c4
-timeCreated: 1445958664
+guid: 534f2475be7f1424ba31e45870d10259
+timeCreated: 1447346066
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
-    100000: Ellipse001
-    100002: //RootNode
-    100004: Railing001
-    400000: Ellipse001
-    400002: //RootNode
-    400004: Railing001
-    2300000: Railing001
-    3300000: Railing001
-    4300000: Railing001
+    100000: Centre_wall
+    100002: Outer_wall
+    100004: //RootNode
+    100006: inner
+    100008: outer
+    400000: Centre_wall
+    400002: Outer_wall
+    400004: //RootNode
+    400006: inner
+    400008: outer
+    2300000: Centre_wall
+    2300002: Outer_wall
+    2300004: inner
+    2300006: outer
+    3300000: Centre_wall
+    3300002: Outer_wall
+    3300004: inner
+    3300006: outer
+    4300000: Outer_wall
+    4300002: Centre_wall
+    4300004: inner
+    4300006: outer
+    6400000: Centre_wall
+    6400002: Outer_wall
+    6400004: inner
+    6400006: outer
   materials:
     importMaterials: 1
     materialName: 0
@@ -39,7 +56,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 1
