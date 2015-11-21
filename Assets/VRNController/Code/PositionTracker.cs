@@ -49,10 +49,7 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 			currentPosition = transform.localPosition;
 		}
 
-		currentPosition = transform.position;
-		lastPosition = transform.position;
-		//currentPosition = transform.localPosition;
-		//lastPosition = transform.localPosition;
+		lastPosition = currentPosition;
 	}
 
 	private bool updatePosnLastFrame = false;

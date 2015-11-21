@@ -317,7 +317,7 @@ public abstract class AbstractVRETaskEnvironment : MonoBehaviour
 	/// a task, then perform any application-specific processing (such as deleting the task or spawning another
 	/// or even ending the game entirely)
 	/// </summary>
-	/// <param name="objective">the task that was completed</param>
+	/// <param name="objective">the task that was completed (may be null)</param>
 	/// <param name="player">the player that completed the task (if applicable)</param>
 	/// <returns></returns>
 	public void TaskCompleted(AbstractVRETask objective, AbstractVREPlayer player)
@@ -412,9 +412,9 @@ public abstract class AbstractVRETaskEnvironment : MonoBehaviour
 	/// <summary>
 	/// Called when a specific task has been completed. concrete implementations
 	/// of this class will behave differently depending on their application. This function
-	/// can be used to spawn new tasks, advance the game state or some other application-specific behaviour..
+	/// can be used to spawn new tasks, advance the game state or some other application-specific behaviour.
 	/// </summary>
-	/// <param name="objective">Task that was completed</param>
-	/// <param name="player">Player that completed the task</param>
+	/// <param name="objective">Task that was completed (may be null)</param>
+	/// <param name="player">Player that completed the task (may be null)</param>
 	protected abstract void DidCompleteTask(AbstractVRETask objective, AbstractVREPlayer player);
 }
