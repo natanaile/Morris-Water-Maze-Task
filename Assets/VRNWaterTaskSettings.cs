@@ -29,7 +29,7 @@ public class VRNWaterTaskSettings : AbstractVRNSettings
 
 	public override void Save()
 	{
-		base.Save(Application.persistentDataPath, VRNStaticMembers.ASSESSMENT_SETTINGS_FILE_NAME, typeof(VRNWaterTaskSettings));
+		base.Save(Application.persistentDataPath, WATER_TASK_SETTINGS_FILENAME, typeof(VRNWaterTaskSettings));
 	}
 
 	public VRNWaterTaskSettings()

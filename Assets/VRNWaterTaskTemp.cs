@@ -7,6 +7,8 @@ using UnityEngine;
 [XmlRoot("Temp")]
 public class VRNWaterTaskTemp : AbstractVRNSettings
 {
+	public const string WATERTASK_TEMP_FILENAME = "WaterTaskTemp.xml";
+
 	/// <summary>
 	/// current trial
 	/// </summary>
@@ -27,7 +29,7 @@ public class VRNWaterTaskTemp : AbstractVRNSettings
 	/// <returns>Return an instance of VRNWaterTaskTemp. If a suitable file exists, the paramters will be loaded from it. otherwise, default settings will be used and a new file will be created.</returns>
 	public static VRNWaterTaskTemp Load()
 	{
-		theInstance = (VRNWaterTaskTemp)AbstractVRNSettings.Load(Application.persistentDataPath + "/" + VRNStaticMembers.TEMP_FILE_NAME, typeof(VRNWaterTaskTemp), theInstance);
+		theInstance = (VRNWaterTaskTemp)AbstractVRNSettings.Load(Application.persistentDataPath + "/" + WATERTASK_TEMP_FILENAME, typeof(VRNWaterTaskTemp), theInstance);
 		return theInstance;
 	}
 
@@ -36,7 +38,7 @@ public class VRNWaterTaskTemp : AbstractVRNSettings
 	/// </summary>
 	public override void Save()
 	{
-		base.Save(Application.persistentDataPath, VRNStaticMembers.TEMP_FILE_NAME, typeof(VRNWaterTaskTemp));
+		base.Save(Application.persistentDataPath, WATERTASK_TEMP_FILENAME, typeof(VRNWaterTaskTemp));
 	}
 
 
@@ -51,7 +53,7 @@ public class VRNWaterTaskTemp : AbstractVRNSettings
 
 	public void Delete()
 	{
-		string tempPath = Application.persistentDataPath + "/" + VRNStaticMembers.TEMP_FILE_NAME;
+		string tempPath = Application.persistentDataPath + "/" + WATERTASK_TEMP_FILENAME;
 		try
 		{
 			File.Delete(tempPath);

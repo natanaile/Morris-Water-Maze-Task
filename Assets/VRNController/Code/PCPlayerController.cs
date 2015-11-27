@@ -126,6 +126,17 @@ public class PCPlayerController : PlayerController
 	public override void Awake()
 	{
 		base.Awake();
+
+		// see if we need to load the calibration scene
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+		if (chairSettings.loadBaseCalibration && !Application.loadedLevelName.Equals("Calibration")) // make sure that we are not already in the calibration level!
+		{
+			VRNControls controlSettings = VRNControls.Load();
+			controlSettings.stickSensitivityY = 1.0f;
+			controlSettings.Save();
+			Application.LoadLevel("Calibration");
+		}
+
 		this.mCollider = GetComponent<CapsuleCollider>();
 	}
 
@@ -152,8 +163,8 @@ public class PCPlayerController : PlayerController
 		mouseSensitivityX = controlSettings.mouseSensitivity;
 
 		// player height
-		VRNAssessmentSettings assessmentSettings = VRNAssessmentSettings.Load();
-		eyeHeight = assessmentSettings.eyeHeight;
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+		eyeHeight = chairSettings.eyeHeight;
 		mCollider.height = eyeHeight + foreheadHeight;
 		float eyeOffset = (foreheadHeight - eyeHeight) / 2;
 
@@ -163,9 +174,8 @@ public class PCPlayerController : PlayerController
 		// connect to IMU
 		try
 		{
-			VRNPlatformSettings mOptions = VRNPlatformSettings.Load();
-			string serialPort = mOptions.serialPortID;
-			int baudRate = mOptions.baudRate;
+			string serialPort = chairSettings.serialPortID;
+			int baudRate = chairSettings.baudRate;
 
 			reader = new IMUSensorReader(serialPort, baudRate);
 			reader.OpenSerialPort();
@@ -178,7 +188,7 @@ public class PCPlayerController : PlayerController
 	}
 
 
-	public void OnDestroy()
+	public virtual void OnDestroy()
 	{
 		if (null != reader)
 		{
@@ -209,6 +219,8 @@ public class PCPlayerController : PlayerController
 	{
 		// base is abstract
 
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+
 		float motionX = 0f;
 
 		if (reader.isConnected)//try reading from IMU
@@ -221,7 +233,7 @@ public class PCPlayerController : PlayerController
 			// try reading from joystick if IMU is disconnected
 			if (IsJoystickConnected())
 			{
-				motionX = Input.GetAxis("Joy_Roll") * stickSensitivityX;
+				motionX = Input.GetAxis("Joy_Roll") * stickSensitivityX * chairSettings.baseSensitivityX;
 				//Debug.Log("sensorID: " + motionX);
 			}
 
@@ -262,11 +274,13 @@ public class PCPlayerController : PlayerController
 	{
 		// base is abstract
 
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+
 		float motionY = 0f;
 
 		if (IsJoystickConnected())
 		{
-			motionY = Input.GetAxis("Joy_Pitch") * stickSensitivityY;
+			motionY = Input.GetAxis("Joy_Pitch") * stickSensitivityY * chairSettings.baseSensitivityY;
 			//Debug.Log("sensorVariant: " + motionY);
 		}
 

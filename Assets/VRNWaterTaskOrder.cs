@@ -4,8 +4,7 @@ using UnityEngine;
 [XmlRoot("TaskOrder")]
 public class VRNWaterTaskOrder : AbstractVRNSettings
 {
-
-
+	public const string WATERTASK_ORDER_FILENAME = "WaterTaskOrder.xml";
 	public enum TaskType
 	{
 		/// <summary>
@@ -45,9 +44,7 @@ public class VRNWaterTaskOrder : AbstractVRNSettings
 			this.taskType = taskType;
 		}
 	}
-
-	public const string WATERTASK_ORDER_FILENAME = "WaterTaskOrder.xml";
-
+	
 	/// <summary>
 	/// task order
 	/// </summary>
@@ -56,7 +53,7 @@ public class VRNWaterTaskOrder : AbstractVRNSettings
 
 	public override void Save()
 	{
-		base.Save(Application.persistentDataPath, VRNStaticMembers.TASK_ORDER_FILE_NAME, typeof(VRNTaskOrder));
+		base.Save(Application.persistentDataPath, WATERTASK_ORDER_FILENAME, typeof(VRNWaterTaskOrder));
 	}
 
 	private static VRNWaterTaskOrder theInstance = null;

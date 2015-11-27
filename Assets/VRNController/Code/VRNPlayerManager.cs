@@ -18,10 +18,8 @@ public class VRNPlayerManager : MonoBehaviour
 	// Use this for initialization
 	void Awake()
 	{
-		VRNAssessmentSettings mOptions = VRNAssessmentSettings.Load();
-
-		VRNPlatformSettings settings = VRNPlatformSettings.Load();
-		//Cursor.visible = false; 
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+		Cursor.visible = false; 
 
 #if OVR_INTEGRATION
 		if (mOptions.ovrEnabled)
@@ -45,11 +43,11 @@ public class VRNPlayerManager : MonoBehaviour
 		}
 #endif
 #if UNITY_VR_INTEGRATION
-		UnityEngine.VR.VRSettings.enabled = mOptions.hmdEnabled;
+		UnityEngine.VR.VRSettings.enabled = chairSettings.hmdEnabled;
 
-		if (!mOptions.hmdEnabled)
+		if (!chairSettings.hmdEnabled)
 		{
-			if (settings.vsncEnabled)
+			if (chairSettings.vsyncEnabled)
 			{
 				QualitySettings.vSyncCount = 1;
 			}
@@ -65,23 +63,23 @@ public class VRNPlayerManager : MonoBehaviour
 		// set quality settings
 		string[] qualityNames = QualitySettings.names;
 
-		switch (settings.qualityLevel)
+		switch (chairSettings.qualityLevel)
 		{
-			case VRNPlatformSettings.QualityLevel.FAST:
+			case VRNChairSettings.QualityLevel.FAST:
 				
 				QualitySettings.SetQualityLevel(0);
 				QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
 				Debug.Log("Quality level " + 0 + "/" + (qualityNames.Length - 1));
 				break;
 
-			case VRNPlatformSettings.QualityLevel.BEAUTIFUL:
+			case VRNChairSettings.QualityLevel.BEAUTIFUL:
 				QualitySettings.SetQualityLevel(qualityNames.Length - 1);
 				QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
 				Debug.Log("Quality level " + (qualityNames.Length - 1) + "/" + (qualityNames.Length - 1));
 				break;
 
 			default:
-				Debug.LogError("Unknown quality level: " + settings.qualityLevel + ". defaulting to most basic.");
+				Debug.LogError("Unknown quality level: " + chairSettings.qualityLevel + ". defaulting to most basic.");
 				QualitySettings.SetQualityLevel(0);
 				break;
 		}

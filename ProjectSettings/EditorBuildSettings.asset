@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Fantasy Skybox FREE/_Demo/Demo.unity
+    path: Assets/Demo.unity
   - enabled: 1
     path: Assets/Hex_Star_maze.unity

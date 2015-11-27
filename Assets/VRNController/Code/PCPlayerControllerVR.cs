@@ -64,12 +64,10 @@ public class PCPlayerControllerVR : PCPlayerController
 		GameObject[] playerCamera = GameObject.FindGameObjectsWithTag("PlayerCamera"); // need to tag Camera in editor
 
 
-		VRNAssessmentSettings settings = VRNAssessmentSettings.Load();
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
 		if (isDecoupled) // switching TO decoupled mode
 		{
-
-
-			if (settings.decoupledMode == VRNAssessmentSettings.DecoupledMode.LOCKED_VR)
+			if (chairSettings.decoupledMode == VRNChairSettings.DecoupledMode.LOCKED_VR)
 			{
 				// lock the DK2
 				if (UnityEngine.VR.VRSettings.enabled)
@@ -80,17 +78,10 @@ public class PCPlayerControllerVR : PCPlayerController
 				// locked VR mode
 				if (playerCamera.Length <= 2)
 				{
-					VRNPlatformSettings mPlatformSettings = VRNPlatformSettings.Load();
-
 					webcamRenderPlane.gameObject.SetActive(true);
-					if (!webcamRenderPlane.ConnectWebcam(mPlatformSettings.webcamDeviceName))
+					if (!webcamRenderPlane.ConnectWebcam(chairSettings.webcamDeviceName))
 					{
 						webcamRenderPlane.gameObject.SetActive(false); // can't connect to a webcam
-						//foreach (GameObject anchor in playerCamera)
-						//{
-						//	Camera camera = anchor.GetComponent<Camera>();
-						//	camera.cullingMask |= 1 << LayerMask.NameToLayer("webcam");
-						//}
 					}
 				}
 			}
@@ -127,7 +118,7 @@ public class PCPlayerControllerVR : PCPlayerController
 		else // switching FROM decoupled
 		{
 
-			if (settings.decoupledMode == VRNAssessmentSettings.DecoupledMode.LOCKED_VR)
+			if (chairSettings.decoupledMode == VRNChairSettings.DecoupledMode.LOCKED_VR)
 			{
 				if (UnityEngine.VR.VRSettings.enabled)
 				{
@@ -232,23 +223,6 @@ public class PCPlayerControllerVR : PCPlayerController
 		// recenter, because that's the whole point of this
 		UnityEngine.VR.InputTracking.Recenter();
 
-		//Vector3 oldHeadAngles = headOldRotation.eulerAngles;
-		//UnityEngine.VR.InputTracking.Recenter();
-
-		//Quaternion headNewLocalRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
-		//Quaternion headNewRotation = HMDCameraRigCorrection.transform.rotation * headNewLocalRotation;
-
-		//Vector3 newHeadAngles = headNewLocalRotation.eulerAngles;
-		//if (oldHeadAngles.Equals(newHeadAngles))
-		//{
-		//	Debug.Log("no difference");
-		//}
-		//else
-		//{
-		//	Debug.Log("different:\n  old: " + oldHeadAngles + ",  new: " + newHeadAngles);
-		//}
-
-
 		// rotate PlayerController so it lines up with head global rotation, then set HMDCameraRigCorrection to 0
 		float rotationCorrection = headOldRotation.eulerAngles.y - playerControllerYaw; // rotation of head relative to body
 		Debug.Log("Rotating " + rotationCorrection + " degrees in Space.Self");
@@ -262,7 +236,17 @@ public class PCPlayerControllerVR : PCPlayerController
 
 	}
 
+	public bool IsWebcamPlaying()
+	{
+		bool isPlaying = false;
 
+		if(null!= webcamRenderPlane)
+		{
+			isPlaying = webcamRenderPlane.isActiveAndEnabled;
+		}
+
+		return isPlaying;
+	}
 
 	//-------------------------------
 	// MonoBehaviour Implementation
@@ -280,16 +264,6 @@ public class PCPlayerControllerVR : PCPlayerController
 		{
 			HmdReset();
 		}
-
-		//if (Input.GetKeyUp(KeyCode.N))
-		//{
-		//	dontBlank = !dontBlank;
-		//}
-
-		//if (Input.GetKeyUp(KeyCode.C))
-		//{
-		//	webcamEnabled = !webcamEnabled;
-		//}
 
 		Vector3 inverseVector = new Vector3(0, -rotationAngle, 0);
 
@@ -317,16 +291,18 @@ public class PCPlayerControllerVR : PCPlayerController
 	{
 		base.Start();
 
+		UnityEngine.VR.InputTracking.Recenter();
+
 		webcamRenderPlane = GameObject.Find("WebcamRenderPlane").GetComponent<WebcamRender>();
 		webcamRenderPlane.gameObject.SetActive(false);
+	}
 
-		//ovrCameraRig = gameObject.GetComponent<OVRCameraRig>();
+	// This function is called when the MonoBehaviour will be destroyed
+	public override void OnDestroy()
+	{
+		base.OnDestroy();
 
-		//OVRManager.CameraPoseTrackingStopped += LostTracker;
-		//OVRManager.CameraPoseTrackingStarted += FoundTracker;
-
-		//OVRManager.TrackingLost += LostTracker;
-		//OVRManager.TrackingAcquired += FoundTracker;
+		webcamRenderPlane.StopWebcam();
 
 	}
 }

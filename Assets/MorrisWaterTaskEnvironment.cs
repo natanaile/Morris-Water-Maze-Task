@@ -77,7 +77,8 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 	{
 		Vector3 position = new Vector3();
 
-		float angle = direction.AngleDegrees();
+		//float angle = direction.AngleDegrees8(); // 8-sided arena
+		float angle = direction.AngleDegrees6(); // 6-sided arena
 		position.z = radius * Mathf.Cos(angle * Mathf.Deg2Rad);
 		position.x = radius * Mathf.Sin(angle * Mathf.Deg2Rad);
 
@@ -104,7 +105,7 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 			// setup file for logging
 			string dateFormat = DateTime.Now.ToString("yyyy-MM-dd_HH_mm"); // log hours/minutes
 			//string dateFormat = DateTime.Now.ToString("yyyy-MM-dd"); // don't log hours/minutes
-			VRNAssessmentSettings assessmentSettings = VRNAssessmentSettings.Load();
+			VRNAbstractVRETaskEnvironmentSettings assessmentSettings = VRNAbstractVRETaskEnvironmentSettings.Load();
 			temp.currentAssessmentName = assessmentSettings.currentPatientName + "_" + dateFormat;
 			temp.Save();
 		}

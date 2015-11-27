@@ -4,6 +4,8 @@ using UnityEngine;
 [XmlRoot("Controls")]
 public class VRNControls : AbstractVRNSettings
 {
+	public const string CONTROLS_FILENAME = "Controls.xml";
+
 	/// <summary>
 	/// X axis sensitivity
 	/// </summary>
@@ -70,12 +72,12 @@ public class VRNControls : AbstractVRNSettings
 
 	public override void Save()
 	{
-		base.Save(Application.persistentDataPath, VRNStaticMembers.CONTROL_FILE_NAME, typeof(VRNControls));
+		base.Save(Application.persistentDataPath, CONTROLS_FILENAME, typeof(VRNControls));
 	}
 
 	public static VRNControls Load()
 	{
-		theInstance = (VRNControls)AbstractVRNSettings.Load(Application.persistentDataPath + "/" + VRNStaticMembers.CONTROL_FILE_NAME, typeof(VRNControls), theInstance);
+		theInstance = (VRNControls)AbstractVRNSettings.Load(Application.persistentDataPath + "/" + CONTROLS_FILENAME, typeof(VRNControls), theInstance);
 		return theInstance;
 	}
 
@@ -93,7 +95,7 @@ public class VRNControls : AbstractVRNSettings
 		this.keySensitivityPivot = 70;
 		this.keySensitivityStrafe = 5;
 
-		this.mouseSensitivity = 750f;
+		this.mouseSensitivity = 0f;
 	}
 }
 

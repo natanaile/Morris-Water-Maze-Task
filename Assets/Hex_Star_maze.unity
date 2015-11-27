@@ -816,10 +816,10 @@ MonoBehaviour:
   oasisInset: 1
   playerStartInset: 1
   OasisPrefab: {fileID: 465010, guid: 5c1bd72c2bb034d418e8a7db5a5022be, type: 2}
-  useStartSettingsFromFile: 1
+  useStartSettingsFromFile: 0
   timeoutSeconds: 5
-  oasisStartDirection: 0
-  playerStartDirection: 1
+  oasisStartDirection: 4
+  playerStartDirection: 7
 --- !u!1 &228160209
 GameObject:
   m_ObjectHideFlags: 0

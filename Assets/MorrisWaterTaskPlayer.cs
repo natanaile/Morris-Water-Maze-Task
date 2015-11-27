@@ -59,9 +59,9 @@ public class MorrisWaterTaskPlayer : AbstractVREPlayer
 
 		// start loggging
 		VRNWaterTaskTemp temp = VRNWaterTaskTemp.Load();
-		VRNPlatformSettings platformSettings = VRNPlatformSettings.Load();
+		VRNAbstractVRETaskEnvironmentSettings taskEnvSettings = VRNAbstractVRETaskEnvironmentSettings.Load();
 		VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load();
-		string logFilePath = platformSettings.defaultDataPath + "/" + temp.currentAssessmentName + "/trial_" + temp.trialNumber;
+		string logFilePath = taskEnvSettings.defaultDataPath + "/" + temp.currentAssessmentName + "/trial_" + temp.trialNumber;
 		string fileName = "position";
 		mPositionLogger.StartLogging(logFilePath, fileName, 16, false, DataLogger.FileCollisionHandlerMode.FILENAME_VERSION_NUMBER);
 
@@ -82,9 +82,8 @@ public class MorrisWaterTaskPlayer : AbstractVREPlayer
 
 		if (null != metaFileStream)
 		{
-			VRNAssessmentSettings assessmentSettigns = VRNAssessmentSettings.Load();
 			StreamWriter writer = new StreamWriter(metaFileStream);
-			writer.WriteLine("Participant Name: " + assessmentSettigns.currentPatientName);
+			writer.WriteLine("Participant Name: " + taskEnvSettings.currentPatientName);
 
 			string dateFormat = DateTime.Now.ToString("yyyy-MM-dd"); // don't log hours/minutes
 			writer.WriteLine("Date: " + dateFormat);

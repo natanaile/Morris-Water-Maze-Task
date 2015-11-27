@@ -341,8 +341,8 @@ public abstract class AbstractVRETaskEnvironment : MonoBehaviour
 	/// </summary>
 	public virtual void BeginEnvironment()
 	{
-		VRNAssessmentSettings settings = VRNAssessmentSettings.Load();
-		player.BeginPlayer(settings.resetPlayerPosition);
+		VRNAbstractVRETaskEnvironmentSettings abstractTaskEnvSettings = VRNAbstractVRETaskEnvironmentSettings.Load();
+		player.BeginPlayer(abstractTaskEnvSettings.resetPlayerPosition);
 	}
 
 	/// <summary>

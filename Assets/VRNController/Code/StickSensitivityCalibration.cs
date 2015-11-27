@@ -13,7 +13,11 @@ public class StickSensitivityCalibration : MonoBehaviour {
 	void Start () {
 		this.calibrationPanel.SetActive(false);
 		VRNControls controls = VRNControls.Load();
-		this.statusTextBox.text = "Sensitivity: " + controls.stickSensitivityY;
+		controls.keySensitivityFwdBwd = 1.0f; // force unity control
+		controls.Save();
+
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+		this.statusTextBox.text = "Sensitivity: " + chairSettings.baseSensitivityY;
 
 		this.mPlayerController = GetComponentInParent<PCPlayerController>();
 
@@ -36,22 +40,22 @@ public class StickSensitivityCalibration : MonoBehaviour {
 
 		if (this.calibrationPanel.activeInHierarchy)
 		{
-			VRNControls controls = VRNControls.Load();
+			VRNChairSettings chairSettings = VRNChairSettings.Load();
 
 			if (Input.GetKeyUp(KeyCode.O))
 			{
-				controls.stickSensitivityY += 0.1f;
-				this.statusTextBox.text = "Sensitivity: " + controls.stickSensitivityY;
-				this.mPlayerController.stickSensitivityY = controls.stickSensitivityY;
-				controls.Save();
+				chairSettings.baseSensitivityY += 0.1f;
+				this.statusTextBox.text = "Sensitivity: " + chairSettings.baseSensitivityY;
+				//this.mPlayerController.stickSensitivityY = chairSettings.baseSensitivityY;
+				chairSettings.Save();
 			}
 
 			if (Input.GetKeyUp(KeyCode.L))
 			{
-				controls.stickSensitivityY -= 0.1f;
-				this.statusTextBox.text = "Sensitivity: " + controls.stickSensitivityY;
-				this.mPlayerController.stickSensitivityY = controls.stickSensitivityY;
-				controls.Save();
+				chairSettings.baseSensitivityY -= 0.1f;
+				this.statusTextBox.text = "Sensitivity: " + chairSettings.baseSensitivityY;
+				//this.mPlayerController.stickSensitivityY = chairSettings.baseSensitivityY;
+				chairSettings.Save();
 			}
 		}
 	}

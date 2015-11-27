@@ -226,11 +226,10 @@ public abstract class PlayerController : MonoBehaviour
 	{
 		SetHudEnabled(false);
 
-		VRNAssessmentSettings settings = VRNAssessmentSettings.Load();
-		FPS_Counter.SetActive(settings.fpsCounterEnabled);
+		VRNChairSettings chairSettings = VRNChairSettings.Load();
+		FPS_Counter.SetActive(chairSettings.fpsCounterEnabled);
 
 #if UNITY_EDITOR || UNITY_STANDALONE
-		//mPopup.Show("Welcome", "Press any key to begin.");
 		if (null != menuButton)
 		{
 			menuButton.SetActive(false);
