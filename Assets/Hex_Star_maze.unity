@@ -419,6 +419,22 @@ Prefab:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 534f2475be7f1424ba31e45870d10259, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 534f2475be7f1424ba31e45870d10259, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: 534f2475be7f1424ba31e45870d10259, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 534f2475be7f1424ba31e45870d10259, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 534f2475be7f1424ba31e45870d10259, type: 3}
   m_IsPrefabParent: 0
@@ -816,7 +832,7 @@ MonoBehaviour:
   oasisInset: 1
   playerStartInset: 1
   OasisPrefab: {fileID: 465010, guid: 5c1bd72c2bb034d418e8a7db5a5022be, type: 2}
-  useStartSettingsFromFile: 0
+  useStartSettingsFromFile: 1
   timeoutSeconds: 5
   oasisStartDirection: 4
   playerStartDirection: 7
