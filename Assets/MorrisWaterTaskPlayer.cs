@@ -87,11 +87,11 @@ public class MorrisWaterTaskPlayer : AbstractVREPlayer
 
 			string dateFormat = DateTime.Now.ToString("yyyy-MM-dd"); // don't log hours/minutes
 			writer.WriteLine("Date: " + dateFormat);
-			writer.WriteLine("Player Start: " + taskOrder.tasksOrder[temp.trialNumber].playerDirection);
-			writer.WriteLine("Target Location: " + taskOrder.tasksOrder[temp.trialNumber].taskDirection);
-			writer.WriteLine("Task type: " + taskOrder.tasksOrder[temp.trialNumber].taskType);
+			writer.WriteLine("Player Start: " + taskOrder.tasksOrder[temp.trialNumber - 1].playerDirection);
+			writer.WriteLine("Target Location: " + taskOrder.tasksOrder[temp.trialNumber - 1].taskDirection);
+			writer.WriteLine("Task type: " + taskOrder.tasksOrder[temp.trialNumber - 1].taskType);
 			VRNWaterTaskSettings waterTaskSettings = VRNWaterTaskSettings.Load();
-			writer.WriteLine("Timeout: " + waterTaskSettings.timeToComplete + "s");
+			writer.WriteLine("Timeout: " + waterTaskSettings.hintTimeout + "s");
 			writer.Close();
 			Debug.Log("Wrote meta file to " + logFilePath + "/meta.txt");
 		} else
