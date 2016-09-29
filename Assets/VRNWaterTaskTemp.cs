@@ -8,6 +8,7 @@ using UnityEngine;
 public class VRNWaterTaskTemp : AbstractVRNSettings
 {
 	public const string WATERTASK_TEMP_FILENAME = "WaterTaskTemp.xml";
+	public const string EMPTY_DESC = "NO_NAME";
 
 	/// <summary>
 	/// current trial
@@ -48,7 +49,7 @@ public class VRNWaterTaskTemp : AbstractVRNSettings
 	public VRNWaterTaskTemp()
 	{
 		this.trialNumber = 1;
-		this.currentAssessmentName = "";
+		this.currentAssessmentName = EMPTY_DESC;
 	}
 
 	public void Delete()

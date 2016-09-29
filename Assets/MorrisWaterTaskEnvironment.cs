@@ -8,7 +8,9 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 	public float radius;
 	public float oasisInset;
 	public float playerStartInset;
+	public int numTasks = 8;
 	public Transform OasisPrefab;
+	public string taskDescriptionString;
 
 
 	public bool useStartSettingsFromFile;
@@ -73,12 +75,13 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 	/// <param name="radius">radius of arena</param>
 	/// <param name="inset">how far in from edge defined by arena</param>
 	/// <returns></returns>
-	private static Vector3 GetPositionInArena(Direction direction, float radius)
+	private Vector3 GetPositionInArena(Direction direction, float radius)
 	{
 		Vector3 position = new Vector3();
 
 		//float angle = direction.AngleDegrees8(); // 8-sided arena
-		float angle = direction.AngleDegrees6(); // 6-sided arena
+		//float angle = direction.AngleDegrees6(); // 6-sided arena
+		float angle = direction.AngleDegrees(numTasks);
 		position.z = radius * Mathf.Cos(angle * Mathf.Deg2Rad);
 		position.x = radius * Mathf.Sin(angle * Mathf.Deg2Rad);
 
@@ -93,21 +96,25 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 		// load player position, oasis position
 		if (useStartSettingsFromFile)
 		{
-			VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load();			
+
+			VRNWaterTaskSettings settings = VRNWaterTaskSettings.Load();
+			VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load(settings.presetPath);			
 			task = taskOrder.tasksOrder[(temp.trialNumber - 1) % taskOrder.tasksOrder.Length];
 
 			playerStartDirection = task.playerDirection;
 			oasisStartDirection = task.taskDirection;
 
-			VRNWaterTaskSettings settings = VRNWaterTaskSettings.Load();
 			timeoutSeconds = settings.hintTimeout;
 
 			// setup file for logging
 			string dateFormat = DateTime.Now.ToString("yyyy-MM-dd_HH_mm"); // log hours/minutes
 			//string dateFormat = DateTime.Now.ToString("yyyy-MM-dd"); // don't log hours/minutes
 			VRNAbstractVRETaskEnvironmentSettings assessmentSettings = VRNAbstractVRETaskEnvironmentSettings.Load();
-			temp.currentAssessmentName = assessmentSettings.currentPatientName + "_" + dateFormat;
-			temp.Save();
+			if (temp.currentAssessmentName.Equals(VRNWaterTaskTemp.EMPTY_DESC))
+			{
+				temp.currentAssessmentName = assessmentSettings.currentPatientName + "_" + taskDescriptionString + dateFormat;
+				temp.Save();
+			}
 		}
 		else
 		{
@@ -127,17 +134,23 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 		}
 
 		base.Start();
+		try
+		{
+			// set player position
+			player.gameObject.transform.parent = this.gameObject.transform;
+			float playerHeightOffset = player.transform.localPosition.y;
+			player.gameObject.transform.localPosition = GetPositionInArena(playerStartDirection, (radius - playerStartInset));
+			player.gameObject.transform.LookAt(this.transform); // look towards centre of arena
+			player.gameObject.transform.localPosition = new Vector3(player.transform.localPosition.x, playerHeightOffset, player.transform.localPosition.z);
 
-		// set player position
-		player.gameObject.transform.parent = this.gameObject.transform;
-		float playerHeightOffset = player.transform.localPosition.y;
-		player.gameObject.transform.localPosition = GetPositionInArena(playerStartDirection, (radius - playerStartInset));
-		player.gameObject.transform.LookAt(this.transform); // look towards centre of arena
-		player.gameObject.transform.localPosition = new Vector3(player.transform.localPosition.x, playerHeightOffset, player.transform.localPosition.z);
+			//player.transform.localRotation = Quaternion.Euler(0, player.transform.localRotation.y, player.transform.localRotation.z);
 
-		//player.transform.localRotation = Quaternion.Euler(0, player.transform.localRotation.y, player.transform.localRotation.z);
-
-		StartCoroutine(WaitForPlayer("Morris Water Task", "Press the spacebar to begin Trial " + temp.trialNumber +".", BeginEnvironment));
+			StartCoroutine(WaitForPlayer("Morris Water Task", "Press the spacebar to begin Trial " + temp.trialNumber + ".", BeginEnvironment));
+		}
+		catch (ArgumentException e)
+		{
+			StartCoroutine(WaitForPlayer("Morris Water Task", "Could not load task, " + e.Message + ". Please close the application and correct the issue.", Application.Quit));
+		}
 	}
 
 	public override void BeginEnvironment()
@@ -195,10 +208,12 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 		}
 
 		// check if finished
-		VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load();
+		VRNWaterTaskSettings mSettings = VRNWaterTaskSettings.Load();
+		VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load(mSettings.presetPath);
 		if (temp.trialNumber > taskOrder.tasksOrder.Length)
 		{
 			// end it
+			temp.Delete();
 			StartCoroutine(WaitForPlayer("Assessment Complete", "Press the spacebar to finish.", Application.Quit));
 		}
 		else

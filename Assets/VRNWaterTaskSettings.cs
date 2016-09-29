@@ -14,6 +14,9 @@ public class VRNWaterTaskSettings : AbstractVRNSettings
 	[XmlElement("TimeToComplete")]
 	public int timeToComplete;
 
+	[XmlElement("PresetPath")]
+	public string presetPath;
+
 	//------------------
 	// Boilerplate Code
 	//------------------

@@ -60,7 +60,8 @@ public class MorrisWaterTaskPlayer : AbstractVREPlayer
 		// start loggging
 		VRNWaterTaskTemp temp = VRNWaterTaskTemp.Load();
 		VRNAbstractVRETaskEnvironmentSettings taskEnvSettings = VRNAbstractVRETaskEnvironmentSettings.Load();
-		VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load();
+		VRNWaterTaskSettings settings = VRNWaterTaskSettings.Load();
+		VRNWaterTaskOrder taskOrder = VRNWaterTaskOrder.Load(settings.presetPath);
 		string logFilePath = taskEnvSettings.defaultDataPath + "/" + temp.currentAssessmentName + "/trial_" + temp.trialNumber;
 		string fileName = "position";
 		mPositionLogger.StartLogging(logFilePath, fileName, 16, false, DataLogger.FileCollisionHandlerMode.FILENAME_VERSION_NUMBER);

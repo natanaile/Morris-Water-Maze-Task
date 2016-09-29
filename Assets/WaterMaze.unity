@@ -1323,7 +1323,9 @@ MonoBehaviour:
   radius: 5
   oasisInset: 1
   playerStartInset: 1
+  numTasks: 8
   OasisPrefab: {fileID: 465010, guid: 5c1bd72c2bb034d418e8a7db5a5022be, type: 2}
+  taskDescriptionString: MorrisWaterMaze
   useStartSettingsFromFile: 1
   timeoutSeconds: 5
   oasisStartDirection: 7
