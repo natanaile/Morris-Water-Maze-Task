@@ -17,6 +17,9 @@ public class VRNWaterTaskSettings : AbstractVRNSettings
 	[XmlElement("PresetPath")]
 	public string presetPath;
 
+	[XmlElement("RedTree")]
+	public bool redTree;
+
 	//------------------
 	// Boilerplate Code
 	//------------------
@@ -39,5 +42,6 @@ public class VRNWaterTaskSettings : AbstractVRNSettings
 	{
 		this.hintTimeout = 30; // seconds
 		this.timeToComplete = 5; // seconds
+		this.redTree = false;
 	}
 }

@@ -93,6 +93,8 @@ public class MorrisWaterTaskPlayer : AbstractVREPlayer
 			writer.WriteLine("Task type: " + taskOrder.tasksOrder[temp.trialNumber - 1].taskType);
 			VRNWaterTaskSettings waterTaskSettings = VRNWaterTaskSettings.Load();
 			writer.WriteLine("Timeout: " + waterTaskSettings.hintTimeout + "s");
+			writer.WriteLine("Task Delay: " + waterTaskSettings.timeToComplete + "s");
+			writer.WriteLine("Red Tree? " + waterTaskSettings.redTree);
 			writer.Close();
 			Debug.Log("Wrote meta file to " + logFilePath + "/meta.txt");
 		} else

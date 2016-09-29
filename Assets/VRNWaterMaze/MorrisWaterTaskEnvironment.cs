@@ -219,7 +219,7 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 		else
 		{
 			// continue
-			Application.LoadLevel(0); // re-load the level to advance to next trial
+			Application.LoadLevel(Application.loadedLevel); // re-load the level to advance to next trial
 		}
 	}
 }
