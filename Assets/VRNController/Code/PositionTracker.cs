@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System;
 
+/// <summary>
+/// The PositionTracker logs the position and orientation of a GameObject. It may be extended to add additional data fields, and child classes should override GetDataLine() and GetHeaderLine() (and of course be sure to call the base functions defined here).
+/// </summary>
 public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 {
 	/// <summary>
@@ -85,6 +88,9 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		}
 	}
 
+	/// <summary>
+	/// Need to implement OnDestroy since the logging thread will not terminate on its own, and will cause all sorts of mischief.
+	/// </summary>
 	public void OnDestroy()
 	{
 		Debug.Log("PositionTracker on " + gameObject.name + "OnDestroy: Try to stop logging.");
@@ -158,6 +164,11 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		return didStop;
 	}
 
+	/// <summary>
+	/// This function is called each time the DataLogger thread creates a new record. The data needs to be formatted in a comma-separated string with the data in the order specified in GetHeaderLine().
+	/// this function may be overridden by child classes to add additional data fields to the log.
+	/// </summary>
+	/// <returns></returns>
 	public virtual string GetDataLine()
 	{
 		long currentTimeMillis = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond; // 0.1ns resolution
@@ -168,6 +179,11 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		return currentTimeMillis + "," + currentPosition.x + "," + currentPosition.y + "," + currentPosition.z + "," + currentRotation.x + "," + currentRotation.y + "," + currentRotation.z + "," + currentRotation.w + "," + currentRotation.eulerAngles.x + "," + currentRotation.eulerAngles.y + "," + currentRotation.eulerAngles.z;
 	}
 
+	/// <summary>
+	/// This function is called once when the DataLogger thread creates a new log file, and returns the names of each of the data fields. The names need to be formatted in a comma-separated string with the data in the order specified in GetDataLine().
+	/// this function may be overridden by child classes to add additional data fields to the log.
+	/// </summary>
+	/// <returns></returns>
 	public virtual string GetHeaderLine()
 	{
 		return "time (ms),Position x,Position y,Position z,RotationQ x,RotationQ y, RotationQ z, RotationQ w,RotationEuler x,RotationEuler y,RotationEuler z";

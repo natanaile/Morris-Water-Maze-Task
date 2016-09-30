@@ -107,6 +107,7 @@ public class MorrisWaterTaskPlayer : AbstractVREPlayer
 	protected override void DidCompleteTask(CompletedTask completedTask)
 	{
 		Debug.Log("Completed task.");
+		mPositionLogger.StopLogging();
 	}
 }
 

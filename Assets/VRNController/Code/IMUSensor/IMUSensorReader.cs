@@ -79,7 +79,7 @@ public class IMUSensorReader : SensorReader
 	/// <param name="reference">angle relative to which the result should be calculated.</param>
 	/// <param name="other"></param>
 	/// <returns>The angle that 'reference' would need to be rotated through to get 'other'</returns>
-	private static Quaternion RelativeOrientation(Quaternion reference, Quaternion other)
+	public static Quaternion RelativeOrientation(Quaternion reference, Quaternion other)
 	{
 		Quaternion resultant;
 
