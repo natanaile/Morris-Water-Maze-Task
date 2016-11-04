@@ -1,5 +1,6 @@
 ﻿/// <summary>
-/// Different types of packets are possible
+/// Different types of packets can be received from the ArduIMU. This enum allows a packet to
+/// be initialized once its variant is known.
 /// </summary>
 public enum PacketVariant
 {
@@ -24,9 +25,18 @@ public enum PacketVariant
 	UNKNOWN = 'X'
 };
 
-// Define an extension method in a non-nested static class. 
+/// <summary>
+/// Define an extension method in a non-nested static class. 
+/// </summary>
 public static class PacketVariantMethods
 {
+	/// <summary>
+	/// Initialize a <see cref="BasicSensorPacket"/> using the raw data stored in <paramref name="rawDataFields"/>. This
+	/// function populates a structured packet, depending on the variant.
+	/// </summary>
+	/// <param name="variant">variant of packet data in <c>rawDataFields</c></param>
+	/// <param name="rawDataFields">array of strings read from ArduIMU in String mode</param>
+	/// <returns></returns>
 	public static BasicSensorPacket InitPacket(this PacketVariant variant, string[] rawDataFields)
 	{
 		BasicSensorPacket packet = null;
@@ -48,6 +58,13 @@ public static class PacketVariantMethods
 		return packet;
 	}
 
+	/// <summary>
+	/// Initialize a <see cref="BasicSensorPacket"/> using the raw data stored in <paramref name="rawData"/>. This
+	/// function populates a structured packet, depending on the variant.
+	/// </summary>
+	/// <param name="variant">variant of packet data in <c>rawDataFields</c></param>
+	/// <param name="rawData">array of bytes read from ArduIMU in Binary mode</param>
+	/// <returns></returns>
 	public static BasicSensorPacket InitPacket(this PacketVariant variant, byte[] rawData)
 	{
 		BasicSensorPacket packet = null;

@@ -2,11 +2,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Abstract representation of what PlayerControllers can do.
+/// Abstract representation of what PlayerControllers can do. This class interacts with UI devices and handles the 
+/// motion of the player. It collects inputs from one of its concrete subclasses (in particular, <see cref="PCPlayerController"/>).
 /// </summary>
 public abstract class PlayerController : MonoBehaviour
 {
-
 	//----------------------
 	// ASSIGNED IN EDITOR
 	//----------------------
@@ -14,11 +14,26 @@ public abstract class PlayerController : MonoBehaviour
 	/// Draw GUI elements
 	/// </summary>
 	public Canvas guiCanvas;
+	/// <summary>
+	/// The hud
+	/// </summary>
 	public HUD hud;
+	/// <summary>
+	/// The m popup template
+	/// </summary>
 	public Transform mPopupTemplate;
+	/// <summary>
+	/// The pause menu
+	/// </summary>
 	public GameObject pauseMenu;
+	/// <summary>
+	/// The menu button
+	/// </summary>
 	public GameObject menuButton;
 
+	/// <summary>
+	/// The FPS counter
+	/// </summary>
 	public GameObject FPS_Counter;
 
 	//--------------------------
@@ -51,8 +66,10 @@ public abstract class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Show a popup that will not automatically terminate, and pass a notification when a button is selected.
 	/// </summary>
-	/// <param name="title"></param>
-	/// <param name="content"></param>
+	/// <param name="title">The title.</param>
+	/// <param name="content">The content.</param>
+	/// <param name="buttonHandler">The button handler.</param>
+	/// <param name="buttonText">The button text.</param>
 	public void ShowPopup(string title, string content, Popup.HandleButton buttonHandler, params string[] buttonText)
 	{
 		Popup mPopup = Popup.Init(guiCanvas, mPopupTemplate.gameObject);
@@ -73,8 +90,9 @@ public abstract class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Show a popup that will automatically terminate when a button is clicked, and pass a notification
 	/// </summary>
-	/// <param name="title"></param>
-	/// <param name="content"></param>
+	/// <param name="title">The title.</param>
+	/// <param name="content">The content.</param>
+	/// <param name="buttonHandler">The button handler.</param>
 	public void ShowPopup(string title, string content, Popup.HandleButton buttonHandler)
 	{
 		Popup mPopup = Popup.Init(guiCanvas, mPopupTemplate.gameObject);
@@ -84,14 +102,20 @@ public abstract class PlayerController : MonoBehaviour
 	/// <summary>
 	/// Show a popup that will automatically terminate after 'millis' milliseconds, and pass a notification
 	/// </summary>
-	/// <param name="title"></param>
-	/// <param name="content"></param>
+	/// <param name="title">The title.</param>
+	/// <param name="content">The content.</param>
+	/// <param name="buttonHandler">The button handler.</param>
+	/// <param name="millis">The time, in milliseconds, to display the popup.</param>
 	public void ShowPopup(string title, string content, Popup.HandleButton buttonHandler, int millis)
 	{
 		Popup mPopup = Popup.Init(guiCanvas, mPopupTemplate.gameObject);
 		mPopup.Show(title, content, millis, buttonHandler);
 	}
 
+	/// <summary>
+	/// Show or hide the HUD
+	/// </summary>
+	/// <param name="isHudEnabled"></param>
 	public void SetHudEnabled(bool isHudEnabled)
 	{
 		if (null != hud)
@@ -110,42 +134,47 @@ public abstract class PlayerController : MonoBehaviour
 	/// <param name="hudText"></param>
 	public delegate void UpdateHudHandler(string hudText);
 
+	/// <summary>
+	/// put some text in the HUD
+	/// </summary>
+	/// <param name="hudText"></param>
 	public void UpdateHud(string hudText)
 	{
 		hud.SetText(hudText);
 	}
 
 	/// <summary>
-	/// Pause the simulation and show the pause menu
+	/// Pause the simulation and show the pause menu 
+	/// (Code is commented out because this function never worked right and I see no reason to fix it since it is fundamentally useless with the existence of 'Decoupled Mode'.)
 	/// </summary>
 	/// <param name="shouldPause"></param>
 	public void SetSimulationPaused(bool shouldPause)
 	{
-		isPaused = shouldPause;
-		if (isPaused)
-		{
-			Time.timeScale = 0;
-			//ToggleGameObject(pauseMenu, true);
+//		isPaused = shouldPause;
+//		if (isPaused)
+//		{
+//			Time.timeScale = 0;
+//			//ToggleGameObject(pauseMenu, true);
 
-			// show/hide menu button
-#if UNITY_EDITOR || UNITY_STANDALONE
-			menuButton.SetActive(false);
-#else
-		ToggleGameObject(menuButton, false);
-#endif
-		}
-		else
-		{
-			Time.timeScale = 1;
-			//ToggleGameObject(pauseMenu, false);
+//			// show/hide menu button
+//#if UNITY_EDITOR || UNITY_STANDALONE
+//			menuButton.SetActive(false);
+//#else
+//		ToggleGameObject(menuButton, false);
+//#endif
+//		}
+//		else
+//		{
+//			Time.timeScale = 1;
+//			//ToggleGameObject(pauseMenu, false);
 
-			// show/hide menu button
-#if UNITY_EDITOR || UNITY_STANDALONE
-			menuButton.SetActive(false);
-#else
-			ToggleGameObject(menuButton, true);
-#endif
-		}
+//			// show/hide menu button
+//#if UNITY_EDITOR || UNITY_STANDALONE
+//			menuButton.SetActive(false);
+//#else
+//			ToggleGameObject(menuButton, true);
+//#endif
+//		}
 
 	}
 
@@ -155,7 +184,9 @@ public abstract class PlayerController : MonoBehaviour
 
 	private bool _isDecoupled = false;
 	/// <summary>
-	/// Decoupled mode for if you need to move the subject but not have the virtual character move
+	/// Decoupled mode for if you need to move the subject but not have the virtual character move.
+	/// This is preferable to pausing as it allows the subject to look around freely and not
+	/// become simulator-sick.
 	/// </summary>
 	public bool isDecoupled
 	{
@@ -180,7 +211,7 @@ public abstract class PlayerController : MonoBehaviour
 	public bool isParalyzed { get; set; }
 
 	/// <summary>
-	/// return the player to their original position/rotation
+	/// return the participant to their original position/rotation
 	/// </summary>
 	public virtual void ResetPlayer()
 	{
@@ -193,6 +224,10 @@ public abstract class PlayerController : MonoBehaviour
 	// MonoBehaviour Implementation
 	//-------------------------------
 
+	/// <summary>
+	/// called every frame. Can be overridden in subclasses, but they should call base.Update().
+	/// This function moves the PlayerController GameObject by polling the inputs.
+	/// </summary>
 	public virtual void Update()
 	{
 		if (Input.GetButtonDown("Pause"))
@@ -222,6 +257,9 @@ public abstract class PlayerController : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Awake is called when the script instance is being loaded
+	/// </summary>
 	public virtual void Awake()
 	{
 		SetHudEnabled(false);
@@ -250,6 +288,9 @@ public abstract class PlayerController : MonoBehaviour
 			GetComponent<Rigidbody>().freezeRotation = true;
 	}
 
+	/// <summary>
+	/// Start is called just before any of the Update methods is called the first time
+	/// </summary>
 	public virtual void Start()
 	{
 		// override in subclass
@@ -262,34 +303,22 @@ public abstract class PlayerController : MonoBehaviour
 	//------------------------
 
 	/// <summary>
-	/// Speed at which to pivot player's body
+	/// Speed at which to pivot participant's body
 	/// </summary>
 	/// <returns></returns>
 	protected abstract float GetRotation();
-	//{
-	//	return 0.0f;
-	//}
 
 	/// <summary>
-	/// Speed at which to move player forward/backward
+	/// Speed at which to move participant forward/backward
 	/// </summary>
 	/// <returns></returns>
 	protected abstract float GetForwardMotion();
-	//{
-	//	return 0.0f;
-	//}
 
 	/// <summary>
 	/// Speed at which to strafe to left and right
 	/// </summary>
 	/// <returns></returns>
 	protected abstract float GetRightMotion();
-	//{
-	//	return 0.0f;
-	//}
-
-	//public abstract void ResetPlayerController();
-
 
 	/// <summary>
 	/// Change the value of the Decoupled variable.

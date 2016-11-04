@@ -43,5 +43,6 @@ public class VRNWaterTaskSettings : AbstractVRNSettings
 		this.hintTimeout = 30; // seconds
 		this.timeToComplete = 5; // seconds
 		this.redTree = false;
-	}
+        this.presetPath = VRNWaterTaskOrder.WATERTASK_ORDER_FILENAME;
+    }
 }

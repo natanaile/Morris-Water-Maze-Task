@@ -2,11 +2,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Data from an IMU sensor
+/// Data from an IMU sensor.
 /// </summary>
 public class IMUSensorPacket : BasicSensorPacket
 {
-	
+
+	/// <summary>
+	/// The scale factor used for converting bytes from the BNO055 to real-world quaternion values.
+	/// </summary>
     public const double SCALE_FACTOR = 16384.0f;
 	
 	/// <summary>
@@ -23,6 +26,12 @@ public class IMUSensorPacket : BasicSensorPacket
 		private set { _orientationDouble = value; }
 	}
 
+	/// <summary>
+	/// Gets the orientation in the packet.
+	/// </summary>
+	/// <value>
+	/// The orientation.
+	/// </value>
 	public Quaternion orientation
 	{
 		get
@@ -37,8 +46,9 @@ public class IMUSensorPacket : BasicSensorPacket
 	}
 
 	/// <summary>
-	/// Constructor
+	/// Constructor from an ArduIMU in string mode
 	/// </summary>
+	/// <param name="fields">the data received from the ArduIMU</param>
 	public IMUSensorPacket(string[] fields)
 		: base(fields)
 	{
@@ -61,6 +71,10 @@ public class IMUSensorPacket : BasicSensorPacket
 			quaternionMag.w);
 	}
 
+	/// <summary>
+	/// Constructor from an ArduIMU in binary mode
+	/// </summary>
+	/// <param name="rawData">the data received from the ArduIMU</param>
 	public IMUSensorPacket(byte[] rawData)
 		: base(rawData)
 	{
@@ -93,6 +107,11 @@ public class IMUSensorPacket : BasicSensorPacket
 		orientationDouble = new QuaternionDouble(x, y, z, w);
 	}
 
+	/// <summary>
+	/// in case you don't want to use the constructor??? not sure why I made this. It should probably be deleted.
+	/// </summary>
+	/// <param name="fields"></param>
+	/// <returns></returns>
 	public static BasicSensorPacket Initialize(string[] fields)
 	{
 		return new IMUSensorPacket(fields);

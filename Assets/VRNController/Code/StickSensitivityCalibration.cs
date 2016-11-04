@@ -2,14 +2,27 @@
 using System.Collections;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is used by the VRN Controller calibration utility. To use this utility, simply build a project with the Calibration scene (<c>VRNController/Scenes/Calibration</c>) in it. 
+/// If you have other scenes, in your build, you can cause the calibration scene to load by setting '<c>LoadBaseCalibration</c>' in <see cref="VRNChairSettings"/>.xml to '<c>TRUE</c>'.
+/// </summary>
 public class StickSensitivityCalibration : MonoBehaviour {
 
+	/// <summary>
+	/// display tools for calibration, and the current values
+	/// </summary>
 	public GameObject calibrationPanel;
+
+	/// <summary>
+	/// show some status
+	/// </summary>
 	public Text statusTextBox;
 
 	private PCPlayerController mPlayerController;
 
-	// Use this for initialization
+	/// <summary>
+	/// Use this for initialization
+	/// </summary>
 	void Start () {
 		this.calibrationPanel.SetActive(false);
 		VRNControls controls = VRNControls.Load();
@@ -25,7 +38,9 @@ public class StickSensitivityCalibration : MonoBehaviour {
 		this.mPlayerController.hud.SetText("Press the '1' key to begin calibration");
 	}
 	
-	// Update is called once per frame
+	/// <summary>
+	/// Update is called once per frame
+	/// </summary>
 	void Update () 
 	{
 		if (Input.GetKeyUp(KeyCode.Alpha1))

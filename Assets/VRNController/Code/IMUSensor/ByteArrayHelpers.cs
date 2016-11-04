@@ -1,7 +1,16 @@
 ﻿using System;
 using System.Text;
+/// <summary>
+/// This class provides utility methods for dealing with byte arrays.
+/// </summary>
 public class ByteArrayHelpers
 {
+	/// <summary>
+	/// Concatenate two byte arrays together, e.g. a, b becomes [a, b]
+	/// </summary>
+	/// <param name="a">first array (this will appear at the beginning)</param>
+	/// <param name="b">second array (this will appear at the end)</param>
+	/// <returns></returns>
 	public static byte[] Concat(byte[] a, byte[] b)
 	{
 		byte[] c = new byte[a.Length + b.Length];
@@ -13,7 +22,7 @@ public class ByteArrayHelpers
 
 
 	/// <summary>
-	/// parse an array of bytesBigEndian into an integer.
+	/// Parse an array of bytesBigEndian into an integer.
 	/// </summary>
 	/// <param name="bytes">component bytesBigEndian of the desired integer</param>
 	/// <param name="isBigEndian"></param>
@@ -101,6 +110,11 @@ public class ByteArrayHelpers
 		return bytes;
 	}
 
+	/// <summary>
+	/// convert a signed byte to an unsigned integer
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns></returns>
 	public static uint ToUnsignedInt(byte x)
 	{
 		return x;
@@ -134,7 +148,7 @@ public class ByteArrayHelpers
 	}
 
 	/// <summary>
-	/// convert a 4-byte representation of a float to a <code>float</code> primitive (UNTESTED)
+	/// convert a 4-byte representation of a float to a <c>float</c> primitive (UNTESTED)
 	/// </summary>
 	/// <param name="bytes"></param>
 	/// <param name="isBigEndian"></param>
@@ -151,9 +165,19 @@ public class ByteArrayHelpers
 		return dataFloat;
 	}
 
+	/// <summary>
+	/// How should the byte array be displayed?
+	/// </summary>
 	public enum ByteArrayMode
 	{
+		/// <summary>
+		/// Represent the bytes as hexadecimal numbers
+		/// </summary>
 		BYTE_ARRAY_MODE_HEX,
+
+		/// <summary>
+		/// represent the bytes as decimal numbers
+		/// </summary>
 		BYTE_ARRAY_MODE_DEC
 	}
 

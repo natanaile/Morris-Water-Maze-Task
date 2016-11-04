@@ -1,20 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Display the feed of a webcam in a texture. This MonoBehaviour should be applied 
+/// to a GameObject that you want to render a webcam feed to.
+/// </summary>
 [RequireComponent(typeof(Material))]
 public class WebcamRender : MonoBehaviour {
 	
-	private Material webcamMaterial;
+	//private Material webcamMaterial;
+
 	private WebCamTexture webcamTex;
 
-	// Awake is called when the script instance is being loaded (Since v1.0)
+	/// <summary>
+	/// Awake is called when the script instance is being loaded (Since v1.0)
+	/// </summary>
 	public void Awake()
 	{
-		MeshRenderer renderer = GetComponent<MeshRenderer>();
-		webcamMaterial = renderer.materials[0];
+		//MeshRenderer renderer = GetComponent<MeshRenderer>();
+		//webcamMaterial = renderer.materials[0];
 	}
 
-	// Start is called just before any of the Update methods is called the first time (Since v1.0)
+	/// <summary>
+	/// Start is called just before any of the Update methods is called the first time (Since v1.0)
+	/// </summary>
 	public void Start()
 	{
 		//if(!ConnectWebcam("Logitech QuickCam Pro 9000"))
@@ -53,17 +62,12 @@ public class WebcamRender : MonoBehaviour {
 			webcamTex.Stop();
 		}
 
-		webcamTex = new WebCamTexture(webcamName, 320, 240, 75);
+        webcamTex = new WebCamTexture(webcamName, 320, 240, 75);
+        webcamTex.deviceName = webcamName;
+        GetComponent<Renderer>().material.mainTexture = webcamTex;
+        //	webcamMaterial.SetTexture(0, webcamTex);
+        webcamTex.Play();
 
-		webcamMaterial.SetTexture(0, webcamTex);
-		webcamTex.Play();
-
-		return webcamTex.isPlaying;
-	}
-	
-
-	// Update is called once per frame
-	void Update () {
-	
+        return webcamTex.isPlaying;
 	}
 }

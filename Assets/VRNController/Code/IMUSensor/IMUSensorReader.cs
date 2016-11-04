@@ -7,15 +7,25 @@ using UnityEngine.UI;
 using System.Collections.Generic; // need to enable .NET 2.0
 
 /// <summary>
-/// Read input from the ArduIMUs and parse it
+/// Read input from the ArduIMUs and parse it.
 /// </summary>
 public class IMUSensorReader : SensorReader
 {
+	/// <summary>
+	/// Identity quaternion
+	/// </summary>
 	public static readonly Quaternion EMPTY_QUATERION = new Quaternion(0, 0, 0, 1.0f);
 
-	//private Quaternion lastOrientation;
+	/// <summary>
+	/// used to store most recent orientation for each known ArduIMU device.
+	/// </summary>
 	private Dictionary<int, Quaternion> lastOrientations;
 
+	/// <summary>
+	/// convenience constructor
+	/// </summary>
+	/// <param name="serialPortID"></param>
+	/// <param name="baudrate"></param>
 	public IMUSensorReader(string serialPortID, int baudrate)
 		: base(serialPortID, baudrate)
 	{

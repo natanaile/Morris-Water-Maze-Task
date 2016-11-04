@@ -1,48 +1,20 @@
-﻿#define UNITY_VR_INTEGRATION
-//#define OVR_INTEGRATION
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is attached to the VRNPlayerController, and sets up the quality/VR settings 
+/// for the unity engine based upon the contents of <see cref="VRNChairSettings"/>.
+/// </summary>
 public class VRNPlayerManager : MonoBehaviour
 {
-# if OVR_INTEGRATION
-	//------------------------------
-	// GameObjects from editor
-	//------------------------------
-	public GameObject VRPlayer;
-	public GameObject MonocularPlayer;
-#endif
-
 	// Use this for initialization
 	void Awake()
 	{
 		VRNChairSettings chairSettings = VRNChairSettings.Load();
 		Cursor.visible = false; 
 
-#if OVR_INTEGRATION
-		if (mOptions.ovrEnabled)
-		{
-			MonocularPlayer.SetActive(false);
-			VRPlayer.SetActive(true);
-		}
-		else
-		{
-			VRPlayer.SetActive(false);
-			MonocularPlayer.SetActive(true);
 
-			if (settings.vsncEnabled)
-			{
-				QualitySettings.vSyncCount = 1;
-			}
-			else
-			{
-				QualitySettings.vSyncCount = 0;
-			}
-		}
-#endif
-#if UNITY_VR_INTEGRATION
 		UnityEngine.VR.VRSettings.enabled = chairSettings.hmdEnabled;
 
 		if (!chairSettings.hmdEnabled)
@@ -56,8 +28,6 @@ public class VRNPlayerManager : MonoBehaviour
 				QualitySettings.vSyncCount = 0;
 			}
 		}
-#endif
-
 
 
 		// set quality settings

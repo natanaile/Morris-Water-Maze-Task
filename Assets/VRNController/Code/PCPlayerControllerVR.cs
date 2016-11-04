@@ -1,27 +1,12 @@
-﻿#define UNITY_VR_INTEGRATION
-//#define OVR_INTEGRATION
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.IO;
 
-/// PCPlayerControllerVR interacts with the Oculus Rift HMD and the VRNchair input device.
-/// Made by paul (modified version of Mouse Look)
-/// Requires the following inputs to be configured in the input manager:
-/// 1. Joy_Pitch
-///		- deadzone 0.01, Sensitivity 1,
-///		- Joystick Y axis
-///		
-/// 2. Joy_Roll
-///		- deadzone 0.01, Sensitivity 1,
-///		- Joystick X axis
-///		
-/// Requires OVRCameraRig to have the two Eye anchors tagged as "OVRCamera"
-
-#if OVR_INTEGRATION
-[RequireComponent(typeof(OVRCameraRig))]
-#endif
-
+/// <summary>
+///  PCPlayerControllerVR interacts with the HMD, and implements the more advanced features of 'Decoupled Mode', including
+///  initializing and managing a <see cref="WebcamRender"/>. It also handles UI elements, and interaction with input 
+///  devices by means of its base class(es).
+/// </summary>
 public class PCPlayerControllerVR : PCPlayerController
 {
 	//----------------------
@@ -33,17 +18,10 @@ public class PCPlayerControllerVR : PCPlayerController
 	/// </summary>
 	public HmdLock HMDCameraRigCorrection;
 
-#if OVR_INTEGRATION
-	///// <summary>
-	///// Oculus Rift baby
-	///// </summary>
-	public OVRCameraRig ovrCameraRig;
-#endif
-
+	/// <summary>
+	/// display a virtual version of the tracker camera (if applicable)
+	/// </summary>
 	public Transform trackerGameObj;
-
-	//public bool dontBlank = true;
-	//public bool webcamEnabled = true;
 
 	//////////////////////
 	// DECOUPLED MODE
@@ -55,8 +33,15 @@ public class PCPlayerControllerVR : PCPlayerController
 	/// </summary>
 	private float hmdYRotationBeforeDecoupling;
 
+	/// <summary>
+	/// used for displaying real-time live feed.
+	/// </summary>
 	private WebcamRender webcamRenderPlane;
 
+	/// <summary>
+	/// different from base class, when decoupling we need to lock the user's body and allow them to re-locate.
+	/// </summary>
+	/// <param name="isDecoupled"></param>
 	protected override void ChangeDecoupled(bool isDecoupled)
 	{
 		base.ChangeDecoupled(isDecoupled);
@@ -99,21 +84,9 @@ public class PCPlayerControllerVR : PCPlayerController
 				}
 
 				// grab the rift orientation
-#if UNITY_VR_INTEGRATION
 				Quaternion hmdOrientationBeforeDecoupling = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
 				hmdYRotationBeforeDecoupling = hmdOrientationBeforeDecoupling.eulerAngles.y;
-#endif
-
-#if OVR_INTEGRATION
-				Quaternion hmdOrientationBeforeDecoupling = OVRManager.display.GetHeadPose(0.0).orientation;
-				hmdYRotationBeforeDecoupling = hmdOrientationBeforeDecoupling.eulerAngles.y;
-#endif
 			}
-
-
-
-
-
 		}
 		else // switching FROM decoupled
 		{
@@ -127,13 +100,6 @@ public class PCPlayerControllerVR : PCPlayerController
 
 				// hide webcam
 				webcamRenderPlane.gameObject.SetActive(false);
-				//foreach (GameObject anchor in playerCamera)
-				//{
-				//	Camera camera = anchor.GetComponent<Camera>();
-				//	int x = ~(1 << LayerMask.NameToLayer("webcam"));
-				//	camera.cullingMask &= ~(1 << LayerMask.NameToLayer("webcam"));
-				//	Debug.Log("cull webcam");
-				//}
 			}
 			else // blank screen
 			{
@@ -146,27 +112,18 @@ public class PCPlayerControllerVR : PCPlayerController
 				}
 
 				// apply the rift orientation
-#if OVR_INTEGRATION
-				Quaternion hmdOrientationAfterDecoupling = OVRManager.display.GetHeadPose(0.0).orientation;
-				float hmdYRotationAfterDecoupling = hmdOrientationAfterDecoupling.eulerAngles.y;
-				HMDCameraRigCorrection.transform.Rotate(Vector3.up, -(hmdYRotationAfterDecoupling - hmdYRotationBeforeDecoupling));
-
-				HmdReset(); // reset body rotation to point forward
-#else
-#if UNITY_VR_INTEGRATION
 				Quaternion hmdOrientationAfterDecoupling = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
 				float hmdYRotationAfterDecoupling = hmdOrientationAfterDecoupling.eulerAngles.y;
 				HMDCameraRigCorrection.transform.Rotate(Vector3.up, -(hmdYRotationAfterDecoupling - hmdYRotationBeforeDecoupling));
-
-
-#endif
-#endif
 			}
 
 			HmdReset(); // reset body rotation to point forward
 		}
 	}
 
+	/// <summary>
+	/// return the participant to their original position/rotation
+	/// </summary>
 	public override void ResetPlayer()
 	{
 		base.ResetPlayer();
@@ -183,35 +140,6 @@ public class PCPlayerControllerVR : PCPlayerController
 	/// </summary>
 	private void HmdReset()
 	{
-
-#if OVR_INTEGRATION
-
-		if (OVRManager.display != null)
-		{
-			Vector3 oldHeadAngles = OVRManager.display.GetHeadPose(0.0).orientation.eulerAngles;
-			OVRManager.display.RecenterPose();
-			Vector3 headEulerAngles = OVRManager.display.GetHeadPose(0.0).orientation.eulerAngles;
-			if (oldHeadAngles.Equals(headEulerAngles))
-			{
-				Debug.Log("no difference");
-			}
-			else
-			{
-				Debug.Log("different:\n  old: " + oldHeadAngles + ",  new: " + headEulerAngles);
-			}
-
-
-			Vector3 bodyEulerAngles = HMDCameraRigCorrection.transform.localRotation.eulerAngles;
-			float rotationCorrection = oldHeadAngles.y + bodyEulerAngles.y; // accumulated errors get passed into body so that head and body are alligned
-			Debug.Log("Rotating " + rotationCorrection + " degrees in Space.Self");
-			transform.Rotate(0f, rotationCorrection, 0f, Space.Self);
-
-
-			HMDCameraRigCorrection.transform.localRotation = Quaternion.Euler(0f, 0f, 0f); // person is looking straight ahead, so align their body with their gaze so as to not break immersion by snapping the camera around
-		}
-#else
-
-#if UNITY_VR_INTEGRATION
 
 		// find head global rotation
 		Quaternion headOldLocalRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
@@ -230,12 +158,14 @@ public class PCPlayerControllerVR : PCPlayerController
 
 
 		HMDCameraRigCorrection.ResetCorrection(); // person is looking straight ahead, so align their body with their gaze so as to not break immersion by snapping the camera around
-
-#endif
-#endif
-
 	}
 
+	/// <summary>
+	/// Determines whether the webcam feed is currently displaying.
+	/// </summary>
+	/// <returns>
+	///   <c>true</c> if webcam is playing; otherwise, <c>false</c>.
+	/// </returns>
 	public bool IsWebcamPlaying()
 	{
 		bool isPlaying = false;
@@ -252,12 +182,12 @@ public class PCPlayerControllerVR : PCPlayerController
 	// MonoBehaviour Implementation
 	//-------------------------------
 
+	/// <summary>
+	/// called every frame. Can be overridden in subclasses, but they should call base.Update().
+	/// This function moves the PlayerController GameObject by polling the inputs.
+	/// </summary>
 	public override void Update()
 	{
-#if OVR_INTEGRATION
-		if (!OVRManager.isHSWDisplayed)
-		{
-#endif
 		base.Update();
 		// Reset rotations to kill drift
 		if (Input.GetButtonDown("OVR Reset"))
@@ -266,27 +196,17 @@ public class PCPlayerControllerVR : PCPlayerController
 		}
 
 		Vector3 inverseVector = new Vector3(0, -rotationAngle, 0);
-
-#if UNITY_VR_INTEGRATION
 		if (UnityEngine.VR.VRSettings.enabled && !this.isDecoupled)
 		{
-#endif
-			// oculus rift detects rotation in world space, so since the OVRCameraRig is a child of the player controller, we need to undo the playercontroller's rotation
+			// HMD detects rotation in world space, so since the Camera is a child of the PlayerController, we need to undo the PlayerController's rotation
 			HMDCameraRigCorrection.transform.Rotate(inverseVector);
-#if UNITY_VR_INTEGRATION
-		}
-#endif
-
-#if OVR_INTEGRATION
-			//// position the 3d tracker
-			//trackerGameObj.transform.position = ovrCameraRig.trackerAnchor.localPosition;
-			//trackerGameObj.transform.rotation = ovrCameraRig.trackerAnchor.localRotation;
 
 		}
-#endif
-
 	}
 
+	/// <summary>
+	/// Start is called just before any of the Update methods is called the first time
+	/// </summary>
 	public override void Start()
 	{
 		base.Start();
@@ -297,13 +217,13 @@ public class PCPlayerControllerVR : PCPlayerController
 		webcamRenderPlane.gameObject.SetActive(false);
 	}
 
-	// This function is called when the MonoBehaviour will be destroyed
+	/// <summary>
+	/// This function is called when the MonoBehaviour will be destroyed
+	/// </summary>
 	public override void OnDestroy()
 	{
 		base.OnDestroy();
 
 		webcamRenderPlane.StopWebcam();
-
 	}
 }
-

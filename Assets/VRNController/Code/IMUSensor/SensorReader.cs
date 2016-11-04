@@ -7,11 +7,17 @@ using System.Collections.Generic;
 using System.IO; // need to enable .NET 2.0
 
 /// <summary>
-/// Read input from the ArduIMUs and parse it
+/// Read input from one or more ArduIMUs and parse it.
 /// </summary>
 public class SensorReader
 {
+	/// <summary>
+	/// The default baud
+	/// </summary>
 	public const int DEFAULT_BAUD = 115200;
+	/// <summary>
+	/// The default port
+	/// </summary>
 	public const string DEFAULT_PORT = "COM4";
 
 	/// <summary>
@@ -23,15 +29,31 @@ public class SensorReader
 		public PacketVariant sensorVariant;
 	}
 
-
+	/// <summary>
+	/// the serial port from which IMU data will come
+	/// </summary>
 	public string serialPortID;
+	
+	/// <summary>
+	/// serial port baud
+	/// </summary>
 	public int baudRate;
+
+	/// <summary>
+	/// property that shows whether the serial port is connected.
+	/// </summary>
 	public bool isConnected { get; private set; }
 
 	/// <summary>
 	/// Store the last received sensor packet of each type from each sensor
 	/// </summary>
 	private Dictionary<SensorPacketDictionaryIndex, BasicSensorPacket> lastPacketsOfType;
+
+	/// <summary>
+	/// Store the latency for each type of sensor packet so we know how frequently we are getting measurements.
+	/// Consult this rather than the times for lastPacketsOfType since this structure is immune to framerate fluctuations.
+	/// </summary>
+	private Dictionary<SensorPacketDictionaryIndex, long> latenciesByType;
 
 	// Serial Communication
 	SerialPort inputPort;
@@ -46,6 +68,7 @@ public class SensorReader
 	public SensorReader()
 	{
 		lastPacketsOfType = new Dictionary<SensorPacketDictionaryIndex, BasicSensorPacket>();
+		latenciesByType = new Dictionary<SensorPacketDictionaryIndex, long>();
 	}
 
 
@@ -114,7 +137,7 @@ public class SensorReader
 	}
 
 	/// <summary>
-	/// Stop the serial thread
+	/// Stop the serial thread when this object gets garbage collected.
 	/// </summary>
 	public void OnDestroy()
 	{
@@ -196,9 +219,23 @@ public class SensorReader
 				{
 					index.sensorID = packet.sensorID;
 					index.sensorVariant = packet.variant;
+					long lastTime = -1;
+
+					BasicSensorPacket previousPacket;
+					if (lastPacketsOfType.TryGetValue(index, out previousPacket))
+					{
+						lastTime = previousPacket.timestamp;
+					}
 					lastPacketsOfType[index] = packet;
+
+
+					if (lastTime > 0)
+					{
+						latenciesByType[index] = packet.timestamp - lastTime;
+					}
 				}
-			} catch (TimeoutException)
+			}
+			catch (TimeoutException)
 			{
 				Debug.LogWarning("Serial connection timed out. Terminating read thread.");
 				isInSync = false;
@@ -211,6 +248,26 @@ public class SensorReader
 				isInSync = false;
 			}
 		}
+	}
+
+	/// <summary>
+	/// Retrieve the latency for a particular packet type, i.e., the time interval between receiving two packets of a specific type. 
+	/// returns -1 if we have not yet received two packets of the specified type.
+	/// </summary>
+	/// <param name="sensorId"></param>
+	/// <param name="variant"></param>
+	/// <returns></returns>
+	public long GetLastLatency(int sensorId, PacketVariant variant)
+	{
+		long latency = -1;
+
+		SensorPacketDictionaryIndex mIndex = new SensorPacketDictionaryIndex();
+		mIndex.sensorID = sensorId;
+		mIndex.sensorVariant = variant;
+
+		latenciesByType.TryGetValue(mIndex, out latency);
+
+		return latency;
 	}
 
 	/// <summary>
@@ -263,7 +320,7 @@ public class SensorReader
 
 		// here's that same structure again :) maybe it should be a function but I'm too lazy
 		byte[] data = new byte[dataSize];
-		
+
 		receivedBytes = 0;
 		while (receivedBytes < dataSize)
 		{

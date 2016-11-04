@@ -1,10 +1,10 @@
-﻿
+﻿using System;
+using UnityEngine;
 
 /// <summary>
-/// Represent a packet and perform common operations
+/// Represent a packet that is coming from an ArduIMU and perform common operations with it. This class can be 
+/// extended for specific types of sensor data (e.g. <see cref="IMUSensorPacket"/> or <see cref="AccelSensorPacket"/>).
 /// </summary>
-using System;
-using UnityEngine;
 public class BasicSensorPacket
 {
 	//------------------------
@@ -86,7 +86,7 @@ public class BasicSensorPacket
 	/// <summary>
 	/// parse binary data to generate a basic packet
 	/// </summary>
-	/// <param name="rawData"></param>
+	/// <param name="rawData">data from ArduIMU</param>
 	public BasicSensorPacket(byte[] rawData)
 	{
 		if (rawData.Length >= HEADER_SIZE)
@@ -146,9 +146,9 @@ public class BasicSensorPacket
 	}
 
 	/// <summary>
-	/// parse text data to generate a basic packet
+	/// Parse incoming text data to generate a basic packet
 	/// </summary>
-	/// <param name="rawData"></param>
+	/// <param name="rawDataFields">Separate each token of the incoming packet depending on the delimiter (might be a ',' or a ';', who knows?)</param>
 	public BasicSensorPacket(String[] rawDataFields)
 	{
 		if (rawDataFields.Length >= PAYLOAD_OFFSET)
@@ -263,6 +263,11 @@ public class BasicSensorPacket
 		return packet;
 	}
 
+	/// <summary>
+	/// Call this function to parse a raw byte stream into a packet. If this function recognizes the packet's type, that packet will be parsed into the correct subclass of <see cref="BasicSensorPacket"/> (e.g. <see cref="IMUSensorPacket"/>)
+	/// </summary>
+	/// <param name="data">array of bytes that have been read from the ArduIMU.</param>
+	/// <returns>A subclass of <see cref="BasicSensorPacket"/></returns>
 	public static BasicSensorPacket ParseData(byte[] data)
 	{
 		BasicSensorPacket packet = null;

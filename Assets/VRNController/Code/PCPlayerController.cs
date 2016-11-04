@@ -1,18 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+using UnityEngine.SceneManagement;
 
-/// PCPlayerController interacts with the VRNchair input device, and keyboard/mouse for input.
-/// Made by paul (modified version of Mouse Look)
-/// Requires the following inputs to be configured in the input manager:
-/// 1. Joy_Pitch
-///		- deadzone 0.01, Sensitivity 1,
-///		- Joystick Y axis
-///		
-/// 2. Joy_Roll
-///		- deadzone 0.01, Sensitivity 1,
-///		- Joystick X axis
-
+/// <summary>
+/// PCPlayerController interacts with the VRNchair input device, and keyboard/mouse for input. It 
+/// handles UI events using its base class. Inspiration for the mouse handling came from the <see cref="MouseLook"/> class.
+/// It also is responsible for deciding whether to load the Calibration level or not. This logic appears in <see cref="Awake()"/>.
+/// The Calibration level uses the <see cref="StickSensitivityCalibration"/> to set the base calibration of the VRN Chair, so 
+/// it can be used in 1:1 tracking.
+/// </summary>
 [RequireComponent(typeof(CapsuleCollider))]
 public class PCPlayerController : PlayerController
 {
@@ -20,25 +17,58 @@ public class PCPlayerController : PlayerController
 	// ASSIGNED IN EDITOR
 	//----------------------
 
+	/// <summary>
+	/// the sensor id of the ArduIMU to use for monitoring the user's body orientation.
+	/// </summary>
 	public int sensorID = 0;
 
 	//////////////////////
 	// JOYSTICK SETTINGS
 	//////////////////////
 
+	/// <summary>
+	/// The stick sensitivity x
+	/// </summary>
 	public float stickSensitivityX = 1.8f; // determined experimentally;
+	/// <summary>
+	/// The stick sensitivity y
+	/// </summary>
 	public float stickSensitivityY = -10f; //(comfortable) //-0.0067f; //(real-life)
-	
+
+	/// <summary>
+	/// The key sensitivity pivot
+	/// </summary>
 	public float keySensitivityPivot = 1f;
+	/// <summary>
+	/// The key sensitivity forward BWD
+	/// </summary>
 	public float keySensitivityFwdBwd = 1f;
+	/// <summary>
+	/// The key sensitivity strafe
+	/// </summary>
 	public float keySensitivityStrafe = 1f;
-	
+
+	/// <summary>
+	/// The minimum x
+	/// </summary>
 	public float minimumX = -360F;
+	/// <summary>
+	/// The maximum x
+	/// </summary>
 	public float maximumX = 360F;
-	
+
+	/// <summary>
+	/// The minimum y
+	/// </summary>
 	public float minimumY = -60F;
+	/// <summary>
+	/// The maximum y
+	/// </summary>
 	public float maximumY = 60F;
- 
+
+	/// <summary>
+	/// The mouse sensitivity x
+	/// </summary>
 	public float mouseSensitivityX = 75f;
 
 	/// <summary>
@@ -55,7 +85,14 @@ public class PCPlayerController : PlayerController
 	// Not exposed to Editor
 	//---------------------------
 
+	/// <summary>
+	/// This provides orientation values from an ArduIMU device.
+	/// </summary>
 	public IMUSensorReader reader;
+
+	/// <summary>
+	/// The collider
+	/// </summary>
 	private CapsuleCollider mCollider;
 
 	//------------------------
@@ -71,6 +108,10 @@ public class PCPlayerController : PlayerController
 	/// </summary>
 	protected Popup decoupledModePopup;
 
+	/// <summary>
+	/// Change the value of the Decoupled variable.
+	/// </summary>
+	/// <param name="isDecoupled">What did decoupled change to?</param>
 	protected override void ChangeDecoupled(bool isDecoupled)
 	{
 		// base is abstract
@@ -123,23 +164,30 @@ public class PCPlayerController : PlayerController
 	//-------------------------------
 	// MonoBehaviour Implementation
 	//-------------------------------
+
+	/// <summary>
+	/// Awake is called when the script instance is being loaded
+	/// </summary>
 	public override void Awake()
 	{
 		base.Awake();
 
 		// see if we need to load the calibration scene
 		VRNChairSettings chairSettings = VRNChairSettings.Load();
-		if (chairSettings.loadBaseCalibration && !Application.loadedLevelName.Equals("Calibration")) // make sure that we are not already in the calibration level!
+		if (chairSettings.loadBaseCalibration && !SceneManager.GetActiveScene().name.Equals("Calibration")) // make sure that we are not already in the calibration level!
 		{
 			VRNControls controlSettings = VRNControls.Load();
 			controlSettings.stickSensitivityY = 1.0f;
 			controlSettings.Save();
-			Application.LoadLevel("Calibration");
+			SceneManager.LoadScene("Calibration");
 		}
 
 		this.mCollider = GetComponent<CapsuleCollider>();
 	}
 
+	/// <summary>
+	/// Start is called just before any of the Update methods is called the first time
+	/// </summary>
 	public override void Start()
 	{
 		base.Start();
@@ -162,7 +210,7 @@ public class PCPlayerController : PlayerController
 
 		mouseSensitivityX = controlSettings.mouseSensitivity;
 
-		// player height
+		// participant height
 		VRNChairSettings chairSettings = VRNChairSettings.Load();
 		eyeHeight = chairSettings.eyeHeight;
 		mCollider.height = eyeHeight + foreheadHeight;
@@ -187,7 +235,9 @@ public class PCPlayerController : PlayerController
 		}
 	}
 
-
+	/// <summary>
+	/// This function is called when the MonoBehaviour will be destroyed
+	/// </summary>
 	public virtual void OnDestroy()
 	{
 		if (null != reader)
@@ -215,6 +265,10 @@ public class PCPlayerController : PlayerController
 	}
 
 	float lastReaderTry = -1f;
+	/// <summary>
+	/// Speed at which to pivot participant's body
+	/// </summary>
+	/// <returns></returns>
 	protected override float GetRotation()
 	{
 		// base is abstract
@@ -270,6 +324,10 @@ public class PCPlayerController : PlayerController
 		return motionX;
 	}
 
+	/// <summary>
+	/// Speed at which to move participant forward/backward
+	/// </summary>
+	/// <returns></returns>
 	protected override float GetForwardMotion()
 	{
 		// base is abstract
@@ -291,14 +349,18 @@ public class PCPlayerController : PlayerController
 			motionY = verticalInput;
 		}
 
-		if (motionY > 0)
-		{
-			//Debug.Log("Motion y:" + motionY);
-		}
+		//if (motionY > 0)
+		//{
+		//	Debug.Log("Motion y:" + motionY);
+		//}
 
 		return motionY;
 	}
 
+	/// <summary>
+	/// Speed at which to strafe to left and right
+	/// </summary>
+	/// <returns></returns>
 	protected override float GetRightMotion()
 	{
 		// base is abstract
@@ -310,6 +372,11 @@ public class PCPlayerController : PlayerController
 		{
 			motionX = strafeInput;
 		}
+
+		//if (motionX > 0)
+		//{
+		//	Debug.Log("Motion x:" + motionX);
+		//}
 
 		return motionX;
 	}

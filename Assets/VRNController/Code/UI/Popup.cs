@@ -4,12 +4,25 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Threading;
 
+/// <summary>
+/// A transient popup that is shown to the user and may be dismissed either after a certain amount of time, or by the
+/// user pressing a key/button.
+/// </summary>
 public class Popup : MonoBehaviour
 {
-
+	/// <summary>
+	/// button macro to indicate that timer has expired. (See <see cref="ButtonPress"/>)
+	/// </summary>
 	public const string TIMEOUT_STRING = "TIMER_TIMEOUT";
+	
+	/// <summary>
+	/// button macro to indicate that any key has been pressed. (See <see cref="ButtonPress"/>)
+	/// </summary>
 	public const string ANY_KEY_STRING = "TIMER_ANY_KEY";
 
+	/// <summary>
+	/// There are different ways that a particular popup may be dismissed.
+	/// </summary>
 	public enum PopupDismiss
 	{
 		/// <summary>
@@ -18,7 +31,7 @@ public class Popup : MonoBehaviour
 		ANY_KEY,
 
 		/// <summary>
-		/// Dismiss by pressing the 'ack' key
+		/// Dismiss by pressing the 'ack' key (whatever it may be)
 		/// </summary>
 		ACK_KEY,
 
@@ -36,10 +49,14 @@ public class Popup : MonoBehaviour
 	//----------------------
 	// ASSIGNED IN EDITOR
 	//----------------------
-	//public GameObject popupTemplate;
-	//public Canvas guiPlane;
 
+	/// <summary>
+	/// The title text for the popup
+	/// </summary>
 	public Text titleText;
+	/// <summary>
+	/// The content text for the popup
+	/// </summary>
 	public Text contentText;
 
 
@@ -48,11 +65,10 @@ public class Popup : MonoBehaviour
 	// Private instance variables
 	//-----------------------------
 
-
-
 	/// <summary>
 	/// call this to indicate that a popup button was pressed
 	/// </summary>
+	/// <param name="popup"></param>
 	/// <param name="buttonTitle"></param>
 	public delegate void HandleButton(Popup popup, string buttonTitle);
 
@@ -61,23 +77,39 @@ public class Popup : MonoBehaviour
 	/// </summary>
 	private event HandleButton ButtonPress;
 
+	/// <summary>
+	/// The means to dismiss this particular popup.
+	/// </summary>
 	public PopupDismiss dismissMode;
+
 	private Button[] popupButtons = new Button[0];
+
+	/// <summary>
+	/// Gets the popup's buttons.
+	/// </summary>
+	/// <returns></returns>
 	public Button[] GetButtons()
 	{
 		return popupButtons;
 	}
 
+	/// <summary>
+	/// Determines whether this popup is active.
+	/// </summary>
+	/// <returns>
+	///   <c>true</c> if this instance is active; otherwise, <c>false</c>.
+	/// </returns>
 	public bool IsActive()
 	{
 		return gameObject.activeInHierarchy;
 	}
 
-	//public static Popup Init()
-	//{
-	//	return Popup.Init(guiPlane, popupTemplate);
-	//}
-
+	/// <summary>
+	/// configure this particular popup according to a template
+	/// </summary>
+	/// <param name="parent"></param>
+	/// <param name="mPopupTemplate"></param>
+	/// <returns></returns>
 	public static Popup Init(Canvas parent, GameObject mPopupTemplate)
 	{
 		GameObject popupObject = Instantiate(mPopupTemplate, parent.transform.position, parent.transform.rotation) as GameObject;
@@ -90,16 +122,28 @@ public class Popup : MonoBehaviour
 		return mPopup;
 	}
 
+	/// <summary>
+	/// Sets the title.
+	/// </summary>
+	/// <param name="mTitle">The m title.</param>
 	public void SetTitle(string mTitle)
 	{
 		titleText.text = mTitle;
 	}
 
+	/// <summary>
+	/// Sets the content.
+	/// </summary>
+	/// <param name="mContent">Content of the m.</param>
 	public void SetContent(string mContent)
 	{
 		contentText.text = mContent;
 	}
 
+	/// <summary>
+	/// Sets the button text.
+	/// </summary>
+	/// <param name="buttonText">The button text.</param>
 	private void SetButtonText(params string[] buttonText)
 	{
 		GameObject buttonTemplate = transform.FindChild("ButtonTemplate").gameObject;
@@ -125,16 +169,25 @@ public class Popup : MonoBehaviour
 		popupButtons = (Button[])popupButtonObjects.ToArray(typeof(Button));
 	}
 
+	/// <summary>
+	/// Hides this popup.
+	/// </summary>
 	public void Hide()
 	{
 		gameObject.SetActive(false);
 	}
 
+	/// <summary>
+	/// Closes this popup.
+	/// </summary>
 	public void Close()
 	{
 		Destroy(this.gameObject);
 	}
 
+	/// <summary>
+	/// Shows this popup.
+	/// </summary>
 	public void Show()
 	{
 		gameObject.SetActive(true);
@@ -163,8 +216,6 @@ public class Popup : MonoBehaviour
 		{
 			this.dismissMode = PopupDismiss.NONE;
 		}
-
-
 	}
 
 	/// <summary>
@@ -185,9 +236,11 @@ public class Popup : MonoBehaviour
 	/// <summary>
 	/// Show a popup with just at title and content that is dismissed after a certain amount of time
 	/// </summary>
-	/// <param name="title"></param>
-	/// <param name="content"></param>
+	/// <param name="title">The title.</param>
+	/// <param name="content">The content.</param>
 	/// <param name="millis">number of milliseconds to wait before dismissing</param>
+	/// <param name="buttonCallback">The button callback.</param>
+	/// <param name="buttonText">The button text.</param>
 	public void Show(string title, string content, int millis, HandleButton buttonCallback, params string[] buttonText)
 	{
 		SetTitle(title);
@@ -200,6 +253,12 @@ public class Popup : MonoBehaviour
 		StartCoroutine(WaitAndClose((float)millis / 1000.0f));
 	}
 
+	/// <summary>
+	/// A co-routine that dismisses the popup after a certain amount of time, provided
+	/// the popup dismissal is <see cref="PopupDismiss.TIMEOUT"/>.
+	/// </summary>
+	/// <param name="waitTimeSeconds"></param>
+	/// <returns></returns>
 	private IEnumerator WaitAndClose(float waitTimeSeconds)
 	{
 		yield return new WaitForSeconds(waitTimeSeconds);
@@ -210,6 +269,10 @@ public class Popup : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// this gets attached to the OnClick listener of each button in the GUI.
+	/// </summary>
+	/// <param name="buttonTitle"></param>
 	public void ButtonPressedCallback(string buttonTitle)
 	{
 		if (ButtonPress != null)
@@ -222,7 +285,9 @@ public class Popup : MonoBehaviour
 	// Monobehaviour Implementations
 	//-------------------------------
 
-	// Update is called every frame, if the MonoBehaviour is enabled (Since v1.0)
+	/// <summary>
+	/// Update is called every frame, if the MonoBehaviour is enabled (Since v1.0)
+	/// </summary>
 	public void Update()
 	{
 		// check to see if 'any' key has been hit and notify the client.

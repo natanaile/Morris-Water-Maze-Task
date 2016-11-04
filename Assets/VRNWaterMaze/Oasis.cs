@@ -9,7 +9,7 @@ public class Oasis : GotoTask
 	private ParticleSystem mParticleSystem;
 
 	// Use this for initialization
- 	void Start()
+ 	public override void Start()
 	{
 		base.Start();
 
@@ -43,7 +43,7 @@ public class Oasis : GotoTask
 	}
 
 	// OnTriggerExit is called when the Collider other has stopped touching the trigger
-	public void OnTriggerExit(Collider other)
+	public override void OnTriggerExit(Collider other)
 	{
 		base.OnTriggerExit(other);
 

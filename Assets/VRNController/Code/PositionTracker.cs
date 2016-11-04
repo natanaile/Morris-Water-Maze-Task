@@ -2,7 +2,8 @@
 using System;
 
 /// <summary>
-/// The PositionTracker logs the position and orientation of a GameObject. It may be extended to add additional data fields, and child classes should override GetDataLine() and GetHeaderLine() (and of course be sure to call the base functions defined here).
+/// The PositionTracker logs the position and orientation of a GameObject. It may be extended to add additional data fields, 
+/// and child classes should override <see cref="GetDataLine"/> and <see cref="GetHeaderLine"/> (and of course be sure to call the base functions defined here).
 /// </summary>
 public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 {
@@ -13,12 +14,28 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 
 	// separate thread for logging position, independent of game thread.
 	private DataLogger mDataLogger;
-	//private string logFilePath;
 
+	/// <summary>
+	/// Gets the start time, in milliseconds.
+	/// </summary>
+	/// <value>
+	/// The start time in milliseconds.
+	/// </value>
 	public long startTimeMillis { get; private set; }
 
+	/// <summary>
+	/// position of body, relative to parent (usually world)
+	/// </summary>
 	public Vector3 currentPosition { get; private set; }
+
+	/// <summary>
+	/// position in previous frame (used for detecting movement, measuring velocity, etc.)
+	/// </summary>
 	public Vector3 lastPosition { get; private set; }
+
+	/// <summary>
+	/// current angle of body relative to parent (usually world)
+	/// </summary>
 	public Quaternion currentRotation { get; private set; }
 
 	/// <summary>
@@ -26,6 +43,10 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 	/// </summary>
 	public float distance { get; private set; }
 
+	/// <summary>
+	/// property that lets other objects know if the associated <see cref="DataLogger"/> is
+	/// currently active.
+	/// </summary>
 	public bool isLogging
 	{
 		get
@@ -34,13 +55,19 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		}
 	}
 
+	/// <summary>
+	/// Default Constructor. Unity does not explicitly call constructors, instead using the <see cref="Start()"/> function.
+	/// The default constructor is defined here to instantiate the DataLogger, which needs to spin up a thread.
+	/// </summary>
 	public PositionTracker()
 	{
 		mDataLogger = new DataLogger(this);
 		//mPath = new VRNPath();
 	}
 
-	// Use this for initialization
+	/// <summary>
+	/// Use this for initialization
+	/// </summary>
 	public virtual void Start()
 	{
 		if (isAbsolutePosition)
@@ -55,7 +82,15 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		lastPosition = currentPosition;
 	}
 
+	/// <summary>
+	/// this state variable is used to ensure that positions are captured the frame AFTER the <see cref="P:DataLogger.isLogging"/> 
+	/// property of <see cref="mDataLogger"/> becomes true. 
+	/// </summary>
 	private bool updatePosnLastFrame = false;
+
+	/// <summary>
+	/// Called every frame. Override in subclasses to add extra functionality (but make sure to call base function!!!)
+	/// </summary>
 	public virtual void Update()
 	{
 		if (mDataLogger.isLogging)
@@ -79,7 +114,7 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 					currentRotation = transform.localRotation;
 				}
 
-				// calculate total distance only when the position changes to avoid doubling up (so if the player does not move, totalDistance only increments by 0)
+				// calculate total distance only when the position changes to avoid doubling up (so if the participant does not move, totalDistance only increments by 0)
 				distance += Vector3.Distance(lastPosition, currentPosition);
 			}
 		} else
@@ -89,7 +124,7 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 	}
 
 	/// <summary>
-	/// Need to implement OnDestroy since the logging thread will not terminate on its own, and will cause all sorts of mischief.
+	/// Need to implement <c>OnDestroy()</c> since the logging thread will not terminate on its own, and will cause all sorts of mischief.
 	/// </summary>
 	public void OnDestroy()
 	{
@@ -103,6 +138,15 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		}
 	}
 
+	/// <summary>
+	/// Begin logging the position of this GameObject at a specific frequency. Successive calls do nothing.
+	/// </summary>
+	/// <param name="outputFilePath">full file path to save data to</param>
+	/// <param name="outputFileName">name of file where data will be saved</param>
+	/// <param name="period">sampling interval</param>
+	/// <param name="overwriteExisting">if a log file of this name already exists, should it be overwritten, or should a new file be created?</param>
+	/// <param name="mCollisionHandlerMode">What should be done in the event that a file with the specified name and directory already exists?</param>
+	/// <returns></returns>
 	public virtual bool StartLogging(string outputFilePath, string outputFileName, int period, bool overwriteExisting, DataLogger.FileCollisionHandlerMode mCollisionHandlerMode)
 	{
 		return StartLogging(outputFilePath, outputFileName, "csv", period, overwriteExisting, mCollisionHandlerMode);
@@ -116,6 +160,7 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 	/// <param name="extension">file extension for dat file</param>
 	/// <param name="period">sampling interval</param>
 	/// <param name="overwriteExisting">if a log file of this name already exists, should it be overwritten, or should a new file be created?</param>
+	/// <param name="mCollisionHandlerMode">What should be done in the event that a file with the specified name and directory already exists?</param>
 	/// <returns>true if logging was started, false if already logging.</returns>
 	public virtual bool StartLogging(string outputFilePath, string outputFileName, string extension, int period, bool overwriteExisting, DataLogger.FileCollisionHandlerMode mCollisionHandlerMode)
 	{
@@ -136,11 +181,19 @@ public class PositionTracker : MonoBehaviour, DataLogger.DataLoggerDelegate
 		return didStart;
 	}
 
+	/// <summary>
+	/// Temporarily stop logging, with the intention of resuming later on.
+	/// </summary>
+	/// <returns>true if successful</returns>
 	public virtual bool PauseLogging()
 	{
 		return this.mDataLogger.HaltLogging();
 	}
 
+	/// <summary>
+	/// Resume logging that was previously paused.
+	/// </summary>
+	/// <returns></returns>
 	public virtual bool ResumeLogging()
 	{
 		return this.mDataLogger.ResumeLogging();

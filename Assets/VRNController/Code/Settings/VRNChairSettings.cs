@@ -3,11 +3,21 @@ using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// Apply settings that are specific to the VRN Chair and its use. These include quality settings, base sensitivities used for
+/// calibration and the details for how Decoupled Mode should operate (e.g. whether or not to use a webcam, whether to show a blue screen or interactive view, etc.).
+/// </summary>
 [XmlRoot("ChairSettings")]
 public class VRNChairSettings : AbstractVRNSettings
 {
+	/// <summary>
+	/// The chair settings filename
+	/// </summary>
 	public const string CHAIR_SETTINGS_FILENAME = "ChairSettings.xml";
 
+	/// <summary>
+	/// There are two different ways for Decoupled Mode to behave.
+	/// </summary>
 	public enum DecoupledMode
 	{
 		/// <summary>
@@ -22,26 +32,39 @@ public class VRNChairSettings : AbstractVRNSettings
 		LOCKED_VR
 	}
 
+	/// <summary>
+	/// Visual settings for eye candy such as shadows, anti-aliasing, anisotropic filtering, etc.
+	/// </summary>
 	public enum QualityLevel
 	{
+		/// <summary>
+		/// basic settings for older/slower hardware. Disable real-time shadows/anti-aliasing/texture filtering
+		/// </summary>
 		FAST,
+
+		/// <summary>
+		/// fancy settings for newer/faster hardware. Enable real-time shadows/anti-aliasing/texture filtering
+		/// </summary>
 		BEAUTIFUL
 	}
 
 	/// <summary>
-	/// base y-sensitivity of wheelchair, to enable 1:1 forward/backward motion. 
+	/// base y-sensitivity of wheelchair. Calibrate this to enable 1:1 forward/backward motion. 
 	/// This value is specific to a particular wheelchair, and should be set for each chair.
 	/// </summary>
 	[XmlElement("BaseSensitivityY")]
 	public float baseSensitivityY;
 
 	/// <summary>
-	/// base x-sensitivity of wheelchair, to enable 1:1 rotation
+	/// base x-sensitivity of wheelchair, to enable 1:1 rotation of wheelchair
 	/// This value is specific to a particular wheelchair, and should be set for each chair.
 	/// </summary>
 	[XmlElement("BaseSensitivityX")]
 	public float baseSensitivityX;
 	
+	/// <summary>
+	/// If true, the HMD will be used, if false, the conventional display.
+	/// </summary>
 	[XmlElement("HMDEnabled")]
 	public bool hmdEnabled;
 
@@ -64,7 +87,7 @@ public class VRNChairSettings : AbstractVRNSettings
 	public DecoupledMode decoupledMode;
 
 	/// <summary>
-	/// What webcam to use?
+	/// String name of the webcam to use
 	/// </summary>
 	[XmlElement("WebcamDeviceName")]
 	public string webcamDeviceName;
@@ -87,9 +110,15 @@ public class VRNChairSettings : AbstractVRNSettings
 	[XmlElement("VsyncEnabled")]
 	public bool vsyncEnabled;
 
+	/// <summary>
+	/// show the current frames per second
+	/// </summary>
 	[XmlElement("FPSCounterEnabled")]
 	public bool fpsCounterEnabled;
 
+	/// <summary>
+	/// If true, Load the calibration scene instead of whatever other scene(s) may be present, and run the <see cref="StickSensitivityCalibration"/>.
+	/// </summary>
 	[XmlElement("LoadBaseCalibration")]
 	public bool loadBaseCalibration;
 
@@ -99,6 +128,10 @@ public class VRNChairSettings : AbstractVRNSettings
 
 	private static VRNChairSettings theInstance = null;
 
+	/// <summary>
+	/// Loads the chair settings.
+	/// </summary>
+	/// <returns></returns>
 	public static VRNChairSettings Load()
 	{
 		string settingsPath = Application.persistentDataPath + "/" + CHAIR_SETTINGS_FILENAME;
@@ -123,11 +156,17 @@ public class VRNChairSettings : AbstractVRNSettings
 		}
 	}
 
+	/// <summary>
+	/// Store the current settings to disk, at the default path. overwrites whatever is currently on disk.
+	/// </summary>
 	public override void Save()
 	{
 		base.Save(Application.persistentDataPath, CHAIR_SETTINGS_FILENAME, typeof(VRNChairSettings));
 	}
 
+	/// <summary>
+	/// default constructor with default values. Call <see cref="Load"/> instead!
+	/// </summary>
 	public VRNChairSettings()
 	{
 		this.baseSensitivityX = 1.0f;

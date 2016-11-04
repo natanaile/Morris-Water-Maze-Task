@@ -66,7 +66,7 @@ public class VRNWaterTaskOrder : AbstractVRNSettings
 	/// <summary>
 	/// name of the file that contains this VRNWaterTaskOrder
 	/// </summary>
-	private string filename;
+	//private string filename;
 
 	/// <summary>
 	/// Use this in lieu of a constructor, this ensures that whatever VRNTaskOrder
@@ -115,13 +115,14 @@ public class VRNWaterTaskOrder : AbstractVRNSettings
 			theInstance = null;
 		}
         theInstance = (VRNWaterTaskOrder) AbstractVRNSettings.Load(Application.persistentDataPath + "/" + filepath, typeof(VRNWaterTaskOrder), theInstance);
-        theInstance.filename = filepath;
+        //theInstance.filename = filepath;
         theInstances[filepath] = theInstance;
         return theInstance;
     }
 
 	public VRNWaterTaskOrder()
 	{
+        this.presetName = "defaultTaskOrder";
 		this.tasksOrder = new VRNWaterTask[]
 		{
 			new VRNWaterTask(Direction.NORTHWEST, Direction.SOUTH, TaskType.INVISIBLE_TARGET),

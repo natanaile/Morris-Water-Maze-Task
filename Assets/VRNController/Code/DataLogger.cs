@@ -3,11 +3,15 @@ using System.IO;
 using System.Threading;
 
 /// <summary>
-/// Log data to a CSV file
+/// Log data to a CSV file. The type of data is determined by the <see cref="DataLoggerDelegate"/> that is assigned to this <c>DataLogger</c>.
+/// This object spawns a thread that polls a DataLoggerDelegate for data to log. Note that this does NOT extend MonoBehaviour, and therefore does 
+/// not count as a GameObject. The PositionTracker creates an instance of this class.
 /// </summary>
 public class DataLogger
 {
-
+	/// <summary>
+	/// This interface allows a delegate class to specify which data should be logged. E.g. the <see cref="PositionTrackerAhmad"/> is a <c>DataLoggerDelegate</c>.
+	/// </summary>
 	public interface DataLoggerDelegate
 	{
 		/// <summary>
@@ -25,21 +29,30 @@ public class DataLogger
 
 	// separate thread for logging position, independent of game thread.
 	Timer logPositionTimer;
+
 	private string logFilePath;
 
-	// instrumentation
+	/// <summary>
+	/// property that communicates whether the DataLogger is logging data.
+	/// </summary>
 	public bool isLogging { get; private set; }
+
+	/// <summary>
+	/// used to remember if the DataLogger has changed its state.
+	/// </summary>
 	private bool wasLogging = false;
 
 	/// <summary>
 	/// has a log file been opened? (i.e. is it legit to call Resume)
 	/// </summary>
 	private bool primedLogFile = false;
-
-	//long startTimeMillis = 0;
-
+	
 	private DataLoggerDelegate mDelegate;
 
+	/// <summary>
+	/// Constructor
+	/// </summary>
+	/// <param name="dataLoggerDelegate">This object can dictate what the log data and log data headers will be.</param>
 	public DataLogger(DataLoggerDelegate dataLoggerDelegate)
 	{
 		this.mDelegate = dataLoggerDelegate;
@@ -149,7 +162,7 @@ public class DataLogger
 	/// Open a file stream in a new file
 	/// </summary>
 	/// <param name="filePath">the path to try</param>
-	/// <param name="filePath">name of the output file</param>
+	/// <param name="fileName">name of the output file</param>
 	/// <param name="extension">file extension (no '.', e.g. for a .csv file this would be 'csv')</param>
 	/// <param name="existing">the number of times that this had already failed</param>
 	/// <param name="mCollisionHandlerMode">How should filename collisions be resolved?</param>

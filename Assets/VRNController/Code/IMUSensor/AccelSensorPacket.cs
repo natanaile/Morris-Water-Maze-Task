@@ -2,10 +2,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Data from an Acceleration sensor
+/// A set of accelerometer data from an ArduIMU
 /// </summary>
 public class AccelSensorPacket : BasicSensorPacket
 {
+	/// <summary>
+	/// ArduIMU samples are multiplied by a scale factor so that they can be sent as fixed-point numbers. 
+	/// This makes transmission cheaper because fewer bytes need to be sent.
+	/// </summary>
 	public const double SCALE_FACTOR = 100.0f;
 	
 	/// <summary>
@@ -14,7 +18,7 @@ public class AccelSensorPacket : BasicSensorPacket
 	private Vector3Double _accelerationDouble;
 
 	/// <summary>
-	/// get the acceleration as a Vector3Double
+	/// get the acceleration as a <see cref="Vector3Double"/>
 	/// </summary>
 	public Vector3Double linearAccelerationDouble
 	{
@@ -22,6 +26,9 @@ public class AccelSensorPacket : BasicSensorPacket
 		private set { _accelerationDouble = value; }
 	}
 
+	/// <summary>
+	/// get the linear acceleration (x, y, z) reported by the ArduIMU as a regular <see cref="Vector3"/>.
+	/// </summary>
 	public Vector3 linearAcceleration
 	{
 		get
@@ -35,8 +42,9 @@ public class AccelSensorPacket : BasicSensorPacket
 	}
 
 	/// <summary>
-	/// Constructor
+	/// Constructor (from an array of strings, if data was transmitted in a comma-separated string format.
 	/// </summary>
+	/// <param name="fields">string data that was sent from ArduIMU</param>
 	public AccelSensorPacket(string[] fields)
 		: base(fields)
 	{
@@ -48,6 +56,10 @@ public class AccelSensorPacket : BasicSensorPacket
 		linearAccelerationDouble = new Vector3Double(x, y, z);
 	}
 
+	/// <summary>
+	/// Constructor (from a byte array, if data was transmitted as raw bytes)
+	/// </summary>
+	/// <param name="rawData">byte-representation of the packet.</param>
 	public AccelSensorPacket(byte[] rawData)
 		: base(rawData)
 	{

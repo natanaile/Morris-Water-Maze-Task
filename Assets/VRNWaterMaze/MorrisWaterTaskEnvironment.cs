@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.SceneManagement;
 
 public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 {
@@ -219,7 +220,7 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 		else
 		{
 			// continue
-			Application.LoadLevel(Application.loadedLevel); // re-load the level to advance to next trial
+			SceneManager.LoadScene(SceneManager.GetActiveScene().name); // re-load the level to advance to next trial
 		}
 	}
 }

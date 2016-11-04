@@ -7,11 +7,18 @@ using System.Collections;
 public class HmdLock : MonoBehaviour
 {
 
+	/// <summary>
+	/// rotation axes
+	/// </summary>
 	public bool rollLock, pitchLock, yawLock;
+
+	/// <summary>
+	/// translation axes
+	/// </summary>
 	public bool xLock, yLock, zLock;
 
-	private Vector3 lastPosn;
-	private Quaternion lastRotation;
+	//private Vector3 lastPosn;
+	//private Quaternion lastRotation;
 	private PlayerController mPlayerController;
 
 	// Use this for initialization
@@ -19,8 +26,8 @@ public class HmdLock : MonoBehaviour
 	{
 		mPlayerController = GetComponentInParent<PlayerController>();
 
-		lastPosn = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.CenterEye);
-		lastRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
+		//lastPosn = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.CenterEye);
+		//lastRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
 	}
 
 	// Update is called once per frame
@@ -80,8 +87,8 @@ public class HmdLock : MonoBehaviour
 		}
 
 		// update last frame
-		lastPosn = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.CenterEye);
-		lastRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
+		//lastPosn = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.CenterEye);
+		//lastRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
 	}
 
 	//// LateUpdate is called every frame, if the Behaviour is enabled (Since v1.0)
@@ -128,7 +135,10 @@ public class HmdLock : MonoBehaviour
 	}
 
 
-
+	/// <summary>
+	/// reset the corrections of this lock to default values. Call this when the person is known to be looking
+	/// in a specific direction (e.g. when <see cref="M:UnityEngine.VR.InputTracking.Recenter()">resetting the HMD</see> to get rid of drift)
+	/// </summary>
 	public void ResetCorrection()
 	{
 		this.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
