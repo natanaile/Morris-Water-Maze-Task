@@ -234,7 +234,7 @@ Biomedical Engineering Department, University of Manitoba, Winnipeg, Canada
 
 ## Changelog
 
-### 2024 Update (Seyedsaber Mirmiran)
+### 2025 Update (Seyedsaber Mirmiran)
 - Upgraded project from Unity 5.3.2f1 to Unity 6000.2.1f1
 - Added non-immersive desktop/laptop mode (can now run without VR headset)
 - Fixed obsolete Unity APIs for compatibility with modern Unity versions
