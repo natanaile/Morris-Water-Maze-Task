@@ -226,6 +226,20 @@ Copyright © University of Manitoba, Biomedical Engineering Department
 
 - P. J. White - *Initial development*
 - Z. Moussavi - *Research supervision*
+- Seyedsaber Mirmiran - *Unity 6000 upgrade & non-immersive desktop mode*
 
 Biomedical Engineering Department, University of Manitoba, Winnipeg, Canada
+
+---
+
+## Changelog
+
+### 2024 Update (Seyedsaber Mirmiran)
+- Upgraded project from Unity 5.3.2f1 to Unity 6000.2.1f1
+- Added non-immersive desktop/laptop mode (can now run without VR headset)
+- Fixed obsolete Unity APIs for compatibility with modern Unity versions
+- Added Xbox controller support with proper joystick orientation
+- Implemented arena boundary constraint to keep player within the circular arena
+- Improved settings file error handling and recovery
+- Added comprehensive documentation
 
