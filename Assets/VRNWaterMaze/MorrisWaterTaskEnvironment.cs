@@ -168,6 +168,36 @@ public class MorrisWaterTaskEnvironment : AbstractVRETaskEnvironment
 	{
 		base.Update();
 
+		// Constrain player to stay within the circular arena
+		if (player != null)
+		{
+			Vector3 playerLocalPos = player.transform.localPosition;
+			float distanceFromCenter = new Vector2(playerLocalPos.x, playerLocalPos.z).magnitude;
+			
+			// Keep player this far inside the edge of the arena (in meters)
+			float boundaryMargin = 0.5f;
+			float effectiveRadius = radius - boundaryMargin;
+			
+			// If player is outside the arena boundary, push them back inside
+			if (distanceFromCenter > effectiveRadius)
+			{
+				// Calculate the direction from center to player
+				Vector2 direction = new Vector2(playerLocalPos.x, playerLocalPos.z).normalized;
+				
+				// Clamp position to be inside the arena with margin
+				playerLocalPos.x = direction.x * effectiveRadius;
+				playerLocalPos.z = direction.y * effectiveRadius;
+				
+				player.transform.localPosition = playerLocalPos;
+			}
+		}
+
+		// Check if task is initialized before accessing it
+		if (task == null)
+		{
+			return;
+		}
+
 		if (task.taskType == VRNWaterTaskOrder.TaskType.INVISIBLE_TARGET)
 		{
 			if (!showTargets && (Time.time - startTime > timeoutSeconds) && !isFinishedTask)

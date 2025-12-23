@@ -7,5 +7,11 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/VRNWaterMaze/WaterMaze.unity
+    guid: 5d9b0f8777e4746738c63da14d2c3cdb
   - enabled: 1
     path: Assets/VRNController/Scenes/Calibration.unity
+    guid: 539fd2d4dd7490f46ade183307db4f23
+  m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f,
+      type: 2}
+  m_UseUCBPForAssetBundles: 0

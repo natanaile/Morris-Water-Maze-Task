@@ -146,7 +146,7 @@ public class Popup : MonoBehaviour
 	/// <param name="buttonText">The button text.</param>
 	private void SetButtonText(params string[] buttonText)
 	{
-		GameObject buttonTemplate = transform.FindChild("ButtonTemplate").gameObject;
+		GameObject buttonTemplate = transform.Find("ButtonTemplate").gameObject;
 		buttonTemplate.SetActive(false);
 		ArrayList popupButtonObjects = new ArrayList();
 
@@ -156,7 +156,7 @@ public class Popup : MonoBehaviour
 			currentButton.name = "button_" + currentButtonLabel;
 			currentButton.transform.SetParent(gameObject.transform, true);
 
-			Text currentButtonText = currentButton.transform.FindChild("Text").gameObject.GetComponent<Text>();
+			Text currentButtonText = currentButton.transform.Find("Text").gameObject.GetComponent<Text>();
 			currentButtonText.text = currentButtonLabel;
 
 			currentButton.SetActive(true);

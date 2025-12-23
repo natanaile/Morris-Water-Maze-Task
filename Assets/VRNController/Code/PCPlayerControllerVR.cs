@@ -55,7 +55,7 @@ public class PCPlayerControllerVR : PCPlayerController
 			if (chairSettings.decoupledMode == VRNChairSettings.DecoupledMode.LOCKED_VR)
 			{
 				// lock the DK2
-				if (UnityEngine.VR.VRSettings.enabled)
+				if (UnityEngine.XR.XRSettings.enabled)
 				{
 					HMDCameraRigCorrection.yawLock = true;
 				}
@@ -84,7 +84,7 @@ public class PCPlayerControllerVR : PCPlayerController
 				}
 
 				// grab the rift orientation
-				Quaternion hmdOrientationBeforeDecoupling = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
+				Quaternion hmdOrientationBeforeDecoupling = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
 				hmdYRotationBeforeDecoupling = hmdOrientationBeforeDecoupling.eulerAngles.y;
 			}
 		}
@@ -93,7 +93,7 @@ public class PCPlayerControllerVR : PCPlayerController
 
 			if (chairSettings.decoupledMode == VRNChairSettings.DecoupledMode.LOCKED_VR)
 			{
-				if (UnityEngine.VR.VRSettings.enabled)
+				if (UnityEngine.XR.XRSettings.enabled)
 				{
 					HMDCameraRigCorrection.yawLock = false;
 				}
@@ -112,7 +112,7 @@ public class PCPlayerControllerVR : PCPlayerController
 				}
 
 				// apply the rift orientation
-				Quaternion hmdOrientationAfterDecoupling = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
+				Quaternion hmdOrientationAfterDecoupling = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
 				float hmdYRotationAfterDecoupling = hmdOrientationAfterDecoupling.eulerAngles.y;
 				HMDCameraRigCorrection.transform.Rotate(Vector3.up, -(hmdYRotationAfterDecoupling - hmdYRotationBeforeDecoupling));
 			}
@@ -142,14 +142,14 @@ public class PCPlayerControllerVR : PCPlayerController
 	{
 
 		// find head global rotation
-		Quaternion headOldLocalRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye);
+		Quaternion headOldLocalRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
 		Quaternion headOldRotation = HMDCameraRigCorrection.transform.rotation * headOldLocalRotation;
 
 		// find global yaw for PlayerController
 		float playerControllerYaw = this.transform.rotation.eulerAngles.y;
 
 		// recenter, because that's the whole point of this
-		UnityEngine.VR.InputTracking.Recenter();
+		UnityEngine.XR.InputTracking.Recenter();
 
 		// rotate PlayerController so it lines up with head global rotation, then set HMDCameraRigCorrection to 0
 		float rotationCorrection = headOldRotation.eulerAngles.y - playerControllerYaw; // rotation of head relative to body
@@ -196,7 +196,7 @@ public class PCPlayerControllerVR : PCPlayerController
 		}
 
 		Vector3 inverseVector = new Vector3(0, -rotationAngle, 0);
-		if (UnityEngine.VR.VRSettings.enabled && !this.isDecoupled)
+		if (UnityEngine.XR.XRSettings.enabled && !this.isDecoupled)
 		{
 			// HMD detects rotation in world space, so since the Camera is a child of the PlayerController, we need to undo the PlayerController's rotation
 			HMDCameraRigCorrection.transform.Rotate(inverseVector);
@@ -211,7 +211,7 @@ public class PCPlayerControllerVR : PCPlayerController
 	{
 		base.Start();
 
-		UnityEngine.VR.InputTracking.Recenter();
+		UnityEngine.XR.InputTracking.Recenter();
 
 		webcamRenderPlane = GameObject.Find("WebcamRenderPlane").GetComponent<WebcamRender>();
 		webcamRenderPlane.gameObject.SetActive(false);
@@ -224,6 +224,9 @@ public class PCPlayerControllerVR : PCPlayerController
 	{
 		base.OnDestroy();
 
-		webcamRenderPlane.StopWebcam();
+		if (webcamRenderPlane != null)
+		{
+			webcamRenderPlane.StopWebcam();
+		}
 	}
 }

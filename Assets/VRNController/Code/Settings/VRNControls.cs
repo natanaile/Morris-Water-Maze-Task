@@ -102,7 +102,7 @@ public class VRNControls : AbstractVRNSettings
 	public VRNControls()
 	{
 		this.stickSensitivityX = 135f;
-		this.stickSensitivityY = -1.2f;
+		this.stickSensitivityY = 1.2f; // Positive = push up to go forward, push down to go backward
 		
 		this.minimumX = -360;
 		this.maximumX = 360;

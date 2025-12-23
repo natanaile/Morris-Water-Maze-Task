@@ -3,7 +3,15 @@
 # =============== #
 Temp/
 Library/
+Build/
 Builds/
+Logs/
+UserSettings/
+MemoryCaptures/
+Recordings/
+
+# Unity 6000+ specific
+ScriptAssemblies/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -30,3 +38,24 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# ================ #
+# Package Manager  #
+# ================ #
+Packages/packages-lock.json
+
+# ============== #
+# Crash Reports  #
+# ============== #
+sysinfo.txt
+crashlytics-build.properties
+
+# ====== #
+# Rider  #
+# ====== #
+.idea/
+
+# ========== #
+# VS Code    #
+# ========== #
+.vscode/

@@ -64,7 +64,7 @@ public class HmdLock : MonoBehaviour
 		if ((xLock || yLock || zLock))
 		{
 			// undo position change since last frame
-			Vector3 currentPosition = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.CenterEye);
+			Vector3 currentPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye);
 			Vector3 positionChange = currentPosition;
 
 			if (!xLock)
@@ -137,7 +137,7 @@ public class HmdLock : MonoBehaviour
 
 	/// <summary>
 	/// reset the corrections of this lock to default values. Call this when the person is known to be looking
-	/// in a specific direction (e.g. when <see cref="M:UnityEngine.VR.InputTracking.Recenter()">resetting the HMD</see> to get rid of drift)
+	/// in a specific direction (e.g. when resetting the HMD to get rid of drift)
 	/// </summary>
 	public void ResetCorrection()
 	{

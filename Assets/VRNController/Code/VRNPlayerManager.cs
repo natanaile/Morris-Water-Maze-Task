@@ -15,7 +15,7 @@ public class VRNPlayerManager : MonoBehaviour
 		Cursor.visible = false; 
 
 
-		UnityEngine.VR.VRSettings.enabled = chairSettings.hmdEnabled;
+		UnityEngine.XR.XRSettings.enabled = chairSettings.hmdEnabled;
 
 		if (!chairSettings.hmdEnabled)
 		{

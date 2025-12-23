@@ -170,9 +170,9 @@ public class VRNChairSettings : AbstractVRNSettings
 	public VRNChairSettings()
 	{
 		this.baseSensitivityX = 1.0f;
-		this.baseSensitivityY = -1.0f;
+		this.baseSensitivityY = 1.0f; // Positive = push joystick up to go forward
 
-		this.hmdEnabled = true;
+		this.hmdEnabled = false; // Set to false for laptop/desktop mode, true for VR headset
 		
 		this.serialPortID = "COM4";
 		this.baudRate = 115200;

@@ -15,7 +15,7 @@ public class SelectiveEnable : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		bool vrEnabled = UnityEngine.VR.VRSettings.enabled;
+		bool vrEnabled = UnityEngine.XR.XRSettings.enabled;
 
 		this.gameObject.SetActive(!(EnabledWithVR ^ vrEnabled));
 	}

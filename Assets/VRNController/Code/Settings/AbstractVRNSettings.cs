@@ -52,35 +52,87 @@ public abstract class AbstractVRNSettings
             {
                 Debug.Log("Directory for " + path + " already exists.");
             }
-            try
+            
+            bool needsRebuild = false;
+            
+            // First, try to load existing file
+            if (File.Exists(path))
             {
-                FileStream mFileStream = new FileStream(path, FileMode.OpenOrCreate); // it may not exist, then rebuild with hard-coded defaults		
-                try
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Length > 0)
                 {
-                    theInstance = mSerializer.Deserialize(mFileStream) as AbstractVRNSettings;
-                    theInstance.lastEdited = File.GetLastWriteTimeUtc(path).Ticks;
+                    try
+                    {
+                        using (FileStream mFileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                        {
+                            theInstance = mSerializer.Deserialize(mFileStream) as AbstractVRNSettings;
+                            if (theInstance != null)
+                            {
+                                theInstance.lastEdited = File.GetLastWriteTimeUtc(path).Ticks;
+                                Debug.Log("Loaded settings from " + path);
+                            }
+                            else
+                            {
+                                needsRebuild = true;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log("Settings file at " + path + " is corrupted... rebuilding. Error: " + ex.Message);
+                        needsRebuild = true;
+                    }
                 }
-                catch (XmlException)
+                else
                 {
-                    Debug.Log("Settings file at " + path + " not found... rebuilding.");
-                    XmlWriterSettings mWriterSettings = new XmlWriterSettings();
-                    mWriterSettings.Encoding = Encoding.UTF8;
-                    mWriterSettings.Indent = true;
-                    XmlWriter mWriter = XmlWriter.Create(mFileStream, mWriterSettings);
-
-                    theInstance = (AbstractVRNSettings)Activator.CreateInstance(type);
-                    theInstance.lastEdited = DateTime.Now.Ticks;
-                    mSerializer.Serialize(mWriter, theInstance);
-                }
-                finally
-                {
-                    Debug.Log("closing file at " + path);
-                    mFileStream.Close();
+                    Debug.Log("Settings file at " + path + " is empty... rebuilding.");
+                    needsRebuild = true;
                 }
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogError(e.Message);
+                Debug.Log("Settings file at " + path + " does not exist... creating.");
+                needsRebuild = true;
+            }
+            
+            // Rebuild if needed
+            if (needsRebuild || theInstance == null)
+            {
+                try
+                {
+                    // Delete corrupted file if it exists
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    
+                    // Create new instance with defaults
+                    theInstance = (AbstractVRNSettings)Activator.CreateInstance(type);
+                    theInstance.lastEdited = DateTime.Now.Ticks;
+                    
+                    // Save to file
+                    using (FileStream newFileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                    {
+                        XmlWriterSettings mWriterSettings = new XmlWriterSettings();
+                        mWriterSettings.Encoding = Encoding.UTF8;
+                        mWriterSettings.Indent = true;
+                        using (XmlWriter mWriter = XmlWriter.Create(newFileStream, mWriterSettings))
+                        {
+                            mSerializer.Serialize(mWriter, theInstance);
+                        }
+                    }
+                    Debug.Log("Created new settings file at " + path);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Error creating settings file: " + e.Message);
+                    // Return default instance even if file creation fails
+                    if (theInstance == null)
+                    {
+                        theInstance = (AbstractVRNSettings)Activator.CreateInstance(type);
+                        theInstance.lastEdited = DateTime.Now.Ticks;
+                    }
+                }
             }
 			//}
 		}

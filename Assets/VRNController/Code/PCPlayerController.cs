@@ -229,9 +229,9 @@ public class PCPlayerController : PlayerController
 			reader.OpenSerialPort();
 			reader.ResetRotation(this.sensorID);
 		}
-		catch (IOException)
+		catch (IOException ex)
 		{
-			Debug.Log("Error connecting to Sensor reader");
+			Debug.LogWarning("Could not connect to Sensor reader: " + ex.Message + ". Game will continue without sensor input.");
 		}
 	}
 
@@ -295,8 +295,15 @@ public class PCPlayerController : PlayerController
 			{
 				lastReaderTry = Time.time;
 				Debug.Log("Try to open serial port... (Time = " + Time.time + "s)");
-				reader.OpenSerialPort();
-				reader.ResetRotation(this.sensorID);
+				try
+				{
+					reader.OpenSerialPort();
+					reader.ResetRotation(this.sensorID);
+				}
+				catch (System.IO.IOException ex)
+				{
+					Debug.LogWarning("Could not open serial port: " + ex.Message + ". Game will continue without sensor input.");
+				}
 			}
 
 		}
